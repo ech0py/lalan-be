@@ -100,7 +100,7 @@ lalan-be/
 └── Makefile              # Build and run commands
 ```
 
-## Available Commands
+## Available Command
 
 ```bash
 make dev          # Run development server with hot reload
