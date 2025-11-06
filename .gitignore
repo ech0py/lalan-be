@@ -39,3 +39,6 @@ Thumbs.db
 
 # Air tmp directory
 tmp/
+.env.dev
+.env
+*.env
