@@ -113,6 +113,35 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
+Menangani request get profile hoster.
+Mengembalikan data profile hoster jika token valid.
+*/
+func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		response.BadRequest(w, message.MsgNotAllowed)
+		return
+	}
+
+	userID := middleware.GetUserID(r)
+	if userID == "" {
+		response.Unauthorized(w, message.MsgUnauthorized)
+		return
+	}
+
+	hoster, err := h.service.GetHosterProfile(userID)
+	if err != nil {
+		if err.Error() == message.MsgHosterNotFound {
+			response.Error(w, http.StatusNotFound, err.Error())
+		} else {
+			response.BadRequest(w, message.MsgInternalServerError)
+		}
+		return
+	}
+
+	response.OK(w, hoster, message.MsgSuccess)
+}
+
+/*
 Menangani request test endpoint terproteksi.
 Mengembalikan informasi user jika token valid.
 */

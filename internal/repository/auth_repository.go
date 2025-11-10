@@ -13,10 +13,12 @@ import (
 Interface untuk operasi autentikasi hoster.
 Mendefinisikan method untuk membuat dan mengambil data hoster.
 */
+
 type AuthRepository interface {
 	CreateHoster(hoster *model.HosterModel) error
 	FindByEmail(email string) (*model.HosterModel, error)
 	FindByEmailForLogin(email string) (*model.HosterModel, error)
+	GetHosterByID(id string) (*model.HosterModel, error)
 }
 
 /*
@@ -79,7 +81,6 @@ Mengembalikan pointer ke model dan error; (nil, nil) jika tidak ada baris.
 */
 func (r *authRepository) FindByEmailForLogin(email string) (*model.HosterModel, error) {
 	var h model.HosterModel
-
 	query := `
         SELECT
             id, email, password_hash, full_name, phone_number,
@@ -116,4 +117,30 @@ func (r *authRepository) FindByEmailForLogin(email string) (*model.HosterModel, 
 	}
 
 	return &h, nil
+}
+
+/*
+Mengambil data hoster lengkap dari tabel hosters berdasarkan ID.
+Mengembalikan pointer ke model dan error; (nil, nil) jika tidak ada baris.
+Tidak mengembalikan password_hash untuk keamanan.
+*/
+func (r *authRepository) GetHosterByID(id string) (*model.HosterModel, error) {
+	var hoster model.HosterModel
+	query := `
+        SELECT
+            id, full_name, profile_photo, store_name, description, website, instagram, tiktok,
+            phone_number, email, address, created_at, updated_at
+        FROM hosters
+        WHERE id = $1
+        LIMIT 1
+    `
+
+	err := r.db.Get(&hoster, query, id)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &hoster, nil
 }

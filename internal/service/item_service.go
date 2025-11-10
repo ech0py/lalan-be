@@ -45,22 +45,22 @@ func (s *itemService) AddItem(input *model.ItemModel) (*model.ItemModel, error) 
 	input.Description = strings.TrimSpace(input.Description)
 
 	if input.Name == "" {
-		return nil, errors.New("item name is required")
+		return nil, errors.New(message.MsgItemNameRequired)
 	}
 	if input.UserID == "" {
-		return nil, errors.New("user ID is required")
+		return nil, errors.New(message.MsgUserIDRequired)
 	}
 	if input.CategoryID == "" {
-		return nil, errors.New("category ID is required")
+		return nil, errors.New(message.MsgCategoryIDRequired)
 	}
 	if input.Stock < 0 {
-		return nil, errors.New("stock cannot be negative")
+		return nil, errors.New(message.MsgItemStockInvalid)
 	}
 	if input.PricePerDay < 0 {
-		return nil, errors.New("price per day cannot be negative")
+		return nil, errors.New(message.MsgItemPricePerDayInvalid)
 	}
 	if input.Deposit < 0 {
-		return nil, errors.New("deposit cannot be negative")
+		return nil, errors.New(message.MsgItemDepositInvalid)
 	}
 
 	existing, err := s.repo.FindItemNameByUserID(input.Name, input.UserID)
@@ -94,7 +94,7 @@ Mengembalikan model atau error.
 */
 func (s *itemService) GetItemByID(id string) (*model.ItemModel, error) {
 	if id == "" {
-		return nil, errors.New("item ID is required")
+		return nil, errors.New(message.MsgItemIDRequired)
 	}
 
 	item, err := s.repo.FindByID(id)
@@ -114,7 +114,7 @@ Mengembalikan slice model atau error.
 */
 func (s *itemService) GetItemsByUserID(userID string) ([]*model.ItemModel, error) {
 	if userID == "" {
-		return nil, errors.New("user ID is required")
+		return nil, errors.New(message.MsgUserIDRequired)
 	}
 
 	return s.repo.FindByUserID(userID)
@@ -126,29 +126,29 @@ Mengembalikan model atau error.
 */
 func (s *itemService) UpdateItem(id string, userID string, input *model.ItemModel) (*model.ItemModel, error) {
 	if id == "" {
-		return nil, errors.New("item ID is required")
+		return nil, errors.New(message.MsgItemIDRequired)
 	}
 	if userID == "" {
-		return nil, errors.New("user ID is required")
+		return nil, errors.New(message.MsgUserIDRequired)
 	}
 
 	input.Name = strings.TrimSpace(input.Name)
 	input.Description = strings.TrimSpace(input.Description)
 
 	if input.Name == "" {
-		return nil, errors.New("item name is required")
+		return nil, errors.New(message.MsgItemNameRequired)
 	}
 	if input.CategoryID == "" {
-		return nil, errors.New("category ID is required")
+		return nil, errors.New(message.MsgCategoryIDRequired)
 	}
 	if input.Stock < 0 {
-		return nil, errors.New("stock cannot be negative")
+		return nil, errors.New(message.MsgItemStockInvalid)
 	}
 	if input.PricePerDay < 0 {
-		return nil, errors.New("price per day cannot be negative")
+		return nil, errors.New(message.MsgItemPricePerDayInvalid)
 	}
 	if input.Deposit < 0 {
-		return nil, errors.New("deposit cannot be negative")
+		return nil, errors.New(message.MsgItemDepositInvalid)
 	}
 
 	existing, err := s.repo.FindByID(id)
@@ -159,7 +159,7 @@ func (s *itemService) UpdateItem(id string, userID string, input *model.ItemMode
 		return nil, errors.New(message.MsgItemNotFound)
 	}
 	if existing.UserID != userID {
-		return nil, errors.New("unauthorized: you can only update your own items")
+		return nil, errors.New(message.MsgUnauthorized)
 	}
 
 	if input.Name != existing.Name {
@@ -187,10 +187,10 @@ Mengembalikan error.
 */
 func (s *itemService) DeleteItem(id string, userID string) error {
 	if id == "" {
-		return errors.New("item ID is required")
+		return errors.New(message.MsgItemIDRequired)
 	}
 	if userID == "" {
-		return errors.New("user ID is required")
+		return errors.New(message.MsgUserIDRequired)
 	}
 
 	existing, err := s.repo.FindByID(id)
@@ -201,7 +201,7 @@ func (s *itemService) DeleteItem(id string, userID string) error {
 		return errors.New(message.MsgItemNotFound)
 	}
 	if existing.UserID != userID {
-		return errors.New("unauthorized: you can only delete your own items")
+		return errors.New(message.MsgUnauthorized)
 	}
 
 	return s.repo.Delete(id)
