@@ -138,6 +138,7 @@ POST /v1/auth/login      # Login with existing credentials
 {
   "initial": "Review the entire codebase to understand its purpose before adding comments.",
   "after": "Remove outdated or unnecessary comments to maintain a clean and consistent codebase.",
-  "new": "Organize code sections according to Golang best practices, then add concise technical comments for each function, method, constant, struct, or significant part of the code. Use block comment format /* ... */. Split long comments into multiple lines for readability. Focus comments on explaining purpose and expected outcomes, avoid restating obvious implementation details. Ensure consistency and clarity in all comments throughout the project."
+  "new": "Organize code sections according to Golang best practices, then add concise technical comments written in Indonesian for each function, method, constant, struct, or significant part of the code. Use block comment format /* ... */. Split long comments into multiple lines for readability. Focus comments on explaining purpose and expected outcomes, avoid restating obvious implementation details. Ensure consistency and clarity in all comments throughout the project."
 }
+
 ```

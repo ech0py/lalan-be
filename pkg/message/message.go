@@ -23,6 +23,7 @@ const (
 	MsgHosterWeakPassword       = "The provided password is too weak."
 	MsgFailedToHashPassword     = "Failed to hash password."
 	MsgHosterNotFound           = "Hoster not found."
+	MsgHosterFetched            = "Hoster data retrieved successfully"
 
 	// Category
 	MsgCategoryCreatedSuccess = "Category created successfully."
@@ -35,12 +36,16 @@ const (
 	MsgCategoryIDRequired     = "Category ID is required."
 
 	// Item
-	MsgItemCreatedSuccess = "Item created successfully."
-	MsgItemUpdatedSuccess = "Item updated successfully."
-	MsgItemDeletedSuccess = "Item deleted successfully."
-	MsgItemNameExists     = "Item name already exists."
-	MsgItemNotFound       = "Item not found."
-	MsgItemNameRequired   = "Item name is required."
-	MsgItemNameTooLong    = "Item name must not exceed 255 characters."
-	MsgItemIDRequired     = "Item ID is required."
+	MsgItemCreatedSuccess     = "Item created successfully."
+	MsgItemUpdatedSuccess     = "Item updated successfully."
+	MsgItemDeletedSuccess     = "Item deleted successfully."
+	MsgItemNameExists         = "Item name already exists."
+	MsgItemNotFound           = "Item not found."
+	MsgItemNameRequired       = "Item name is required."
+	MsgItemNameTooLong        = "Item name must not exceed 255 characters."
+	MsgItemIDRequired         = "Item ID is required."
+	MsgUserIDRequired         = "User ID is required."
+	MsgItemStockInvalid       = "Item stock cannot be negative."
+	MsgItemPricePerDayInvalid = "Item price per day cannot be negative."
+	MsgItemDepositInvalid     = "Item deposit cannot be negative."
 )
