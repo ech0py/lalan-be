@@ -2,6 +2,9 @@ package model
 
 import "time"
 
+/*
+Mendefinisikan metode pengambilan item.
+*/
 const (
 	PickupMethodSelfPickup PickupMethod = "pickup"
 	PickupMethodDelivery   PickupMethod = "delivery"

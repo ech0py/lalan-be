@@ -44,6 +44,13 @@ func (h *TermsAndConditionsHandler) AddTermsAndConditions(w http.ResponseWriter,
 		return
 	}
 
+	// Validasi role: hanya hoster yang bisa
+	userRole := middleware.GetUserRole(r)
+	if userRole != "hoster" {
+		response.Error(w, http.StatusForbidden, "Access denied: only hosters can add terms and conditions")
+		return
+	}
+
 	userID := middleware.GetUserID(r)
 	if userID == "" {
 		response.Unauthorized(w, message.MsgUnauthorized)
@@ -77,3 +84,6 @@ func (h *TermsAndConditionsHandler) AddTermsAndConditions(w http.ResponseWriter,
 
 	response.Created(w, tncResp, message.MsgTermAndConditionsCreatedSuccess)
 }
+
+// Tambahkan method lain jika diperlukan untuk CRUD lengkap, dengan validasi role serupa
+// Contoh: GetTermsAndConditions, UpdateTermsAndConditions, DeleteTermsAndConditions

@@ -10,6 +10,10 @@ import (
 	"github.com/google/uuid"
 )
 
+type itemService struct {
+	repo repository.ItemRepository
+}
+
 /*
 Mendefinisikan operasi service item.
 Menyediakan method untuk menambah, ambil semua, ambil by ID, ambil by user, update, dan hapus item dengan hasil sukses atau error.
@@ -21,13 +25,6 @@ type ItemService interface {
 	GetItemsByUserID(userID string) ([]*model.ItemModel, error)
 	UpdateItem(id string, userID string, input *model.ItemModel) (*model.ItemModel, error)
 	DeleteItem(id string, userID string) error
-}
-
-/*
-Implementasi service item dengan repository.
-*/
-type itemService struct {
-	repo repository.ItemRepository
 }
 
 /*

@@ -6,12 +6,13 @@ Menyediakan pesan standar untuk sukses, error, dan validasi berdasarkan domain.
 */
 const (
 	// General
-	MsgSuccess             = "Operation completed successfully."
-	MsgBadRequest          = "Bad request."
-	MsgUnauthorized        = "Unauthorized access."
-	MsgNotAllowed          = "Action not allowed."
-	MsgInternalServerError = "Internal server error."
-	MsgUserIDRequired      = "User ID is required."
+	MsgSuccess              = "Success."
+	MsgBadRequest           = "Bad request."
+	MsgUnauthorized         = "Unauthorized."
+	MsgNotAllowed           = "Method not allowed."
+	MsgInternalServerError  = "Internal server error."
+	MsgUserIDRequired       = "User ID is required."
+	MsgFailedToHashPassword = "Failed to hash password."
 
 	// Authentication / Hoster
 	MsgHosterCreatedSuccess     = "Hoster created successfully."
@@ -22,9 +23,21 @@ const (
 	MsgHosterInvalidCredentials = "Invalid email or password."
 	MsgHosterEmailExists        = "A hoster with this email already exists."
 	MsgHosterWeakPassword       = "The provided password is too weak."
-	MsgFailedToHashPassword     = "Failed to hash password."
 	MsgHosterNotFound           = "Hoster not found."
-	MsgHosterFetched            = "Hoster data retrieved successfully"
+	MsgHosterFetched            = "Hoster data retrieved successfully."
+
+	// Authentication / Customer
+	MsgCustomerCreatedSuccess     = "Customer created successfully."
+	MsgCustomerCreatedFailed      = "Failed to create customer."
+	MsgCustomerLoginSuccess       = "Customer logged in successfully."
+	MsgCustomerLoginFailed        = "Customer login failed."
+	MsgCustomerInvalidEmail       = "Invalid email format."
+	MsgCustomerInvalidCredentials = "Invalid email or password."
+	MsgCustomerEmailExists        = "A customer with this email already exists."
+	MsgCustomerWeakPassword       = "The provided password is too weak."
+
+	MsgCustomerNotFound = "Customer not found."
+	MsgCustomerFetched  = "Customer data retrieved successfully."
 
 	// Category
 	MsgCategoryCreatedSuccess = "Category created successfully."
@@ -51,15 +64,15 @@ const (
 	MsgItemDepositInvalid     = "Item deposit cannot be negative."
 
 	// Term and Conditions
-	MsgTermAndConditionsCreatedSuccess      = "Term and conditions created successfully."
-	MsgTermAndConditionsUpdatedSuccess      = "Term and conditions updated successfully."
-	MsgTermAndConditionsDeletedSuccess      = "Term and conditions deleted successfully."
-	MsgTermAndConditionsAlreadyExists       = "Term and conditions description already exists."
-	MsgTermAndConditionsNotFound            = "Term and conditions not found."
-	MsgTermAndConditionsDescriptionRequired = "Term and conditions description is required."
-	MsgTermAndConditionsDescriptionTooShort = "Term and conditions description must be 255 characters."
-	MsgTermAndConditionsIDRequired          = "Term and conditions ID is required."
-	MsgTermAndConditionsStockInvalid        = "Term and conditions stock cannot be negative."
-	MsgTermAndConditionsPricePerDayInvalid  = "Term and conditions price per day cannot be negative."
-	MsgTermAndConditionsDepositInvalid      = "Term and conditions deposit cannot be negative."
+	MsgTermAndConditionsCreatedSuccess      = "Terms and conditions created successfully."
+	MsgTermAndConditionsUpdatedSuccess      = "Terms and conditions updated successfully."
+	MsgTermAndConditionsDeletedSuccess      = "Terms and conditions deleted successfully."
+	MsgTermAndConditionsAlreadyExists       = "Terms and conditions already exist."
+	MsgTermAndConditionsNotFound            = "Terms and conditions not found."
+	MsgTermAndConditionsDescriptionRequired = "Terms and conditions description is required."
+	MsgTermAndConditionsDescriptionTooShort = "Terms and conditions description must be at least 255 characters."
+	MsgTermAndConditionsIDRequired          = "Terms and conditions ID is required."
+	MsgTermAndConditionsStockInvalid        = "Terms and conditions stock cannot be negative."
+	MsgTermAndConditionsPricePerDayInvalid  = "Terms and conditions price per day cannot be negative."
+	MsgTermAndConditionsDepositInvalid      = "Terms and conditions deposit cannot be negative."
 )

@@ -10,27 +10,10 @@ import (
 )
 
 /*
-Mendefinisikan operasi repository untuk terms and conditions.
-Menyediakan method untuk membuat dan mengambil TAC dengan hasil sukses atau error.
-*/
-type TermsAndConditionsRepository interface {
-	CreateTermAndConditions(tac *model.TermsAndConditionsModel) error
-	FindByUserID(userID string) (*model.TermsAndConditionsModel, error)
-}
-
-/*
 Implementasi repository TAC dengan koneksi database.
 */
 type termsAndConditionsRepository struct {
 	db *sqlx.DB
-}
-
-/*
-Membuat repository TAC.
-Mengembalikan instance TermsAndConditionsRepository yang siap digunakan.
-*/
-func NewTermsAndConditionsRepository(db *sqlx.DB) TermsAndConditionsRepository {
-	return &termsAndConditionsRepository{db: db}
 }
 
 /*
@@ -83,4 +66,21 @@ func (r *termsAndConditionsRepository) CreateTermAndConditions(tac *model.TermsA
 		return err
 	}
 	return nil
+}
+
+/*
+Mendefinisikan operasi repository untuk terms and conditions.
+Menyediakan method untuk membuat dan mengambil TAC dengan hasil sukses atau error.
+*/
+type TermsAndConditionsRepository interface {
+	CreateTermAndConditions(tac *model.TermsAndConditionsModel) error
+	FindByUserID(userID string) (*model.TermsAndConditionsModel, error)
+}
+
+/*
+Membuat repository TAC.
+Mengembalikan instance TermsAndConditionsRepository yang siap digunakan.
+*/
+func NewTermsAndConditionsRepository(db *sqlx.DB) TermsAndConditionsRepository {
+	return &termsAndConditionsRepository{db: db}
 }

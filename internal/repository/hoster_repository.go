@@ -10,29 +10,10 @@ import (
 )
 
 /*
-Mendefinisikan operasi repository untuk autentikasi hoster.
-Menyediakan method untuk membuat dan mengambil data hoster dengan hasil sukses atau error.
-*/
-type AuthRepository interface {
-	CreateHoster(hoster *model.HosterModel) error
-	FindByEmail(email string) (*model.HosterModel, error)
-	FindByEmailForLogin(email string) (*model.HosterModel, error)
-	GetHosterByID(id string) (*model.HosterModel, error)
-}
-
-/*
 Implementasi repository autentikasi dengan koneksi database.
 */
 type authRepository struct {
 	db *sqlx.DB
-}
-
-/*
-Membuat repository autentikasi.
-Mengembalikan instance AuthRepository yang siap digunakan.
-*/
-func NewAuthRepository(db *sqlx.DB) AuthRepository {
-	return &authRepository{db: db}
 }
 
 /*
@@ -140,4 +121,23 @@ func (r *authRepository) GetHosterByID(id string) (*model.HosterModel, error) {
 		return nil, err
 	}
 	return &hoster, nil
+}
+
+/*
+Mendefinisikan operasi repository untuk autentikasi hoster.
+Menyediakan method untuk membuat dan mengambil data hoster dengan hasil sukses atau error.
+*/
+type AuthRepository interface {
+	CreateHoster(hoster *model.HosterModel) error
+	FindByEmail(email string) (*model.HosterModel, error)
+	FindByEmailForLogin(email string) (*model.HosterModel, error)
+	GetHosterByID(id string) (*model.HosterModel, error)
+}
+
+/*
+Membuat repository autentikasi.
+Mengembalikan instance AuthRepository yang siap digunakan.
+*/
+func NewAuthRepository(db *sqlx.DB) AuthRepository {
+	return &authRepository{db: db}
 }
