@@ -11,18 +11,14 @@ import (
 	"lalan-be/pkg/message"
 )
 
-/*
-Menangani autentikasi hoster.
-Menyediakan operasi registrasi, login, dan pengambilan profil dengan respons sukses atau error.
-*/
-type AuthHandler struct {
-	service service.AuthService
+// HosterHandler menangani autentikasi hoster.
+// Menyediakan operasi registrasi, login, dan pengambilan profil dengan respons sukses atau error.
+type HosterHandler struct {
+	service service.HosterService
 }
 
-/*
-Merepresentasikan data registrasi hoster.
-Digunakan untuk decoding request JSON dan mapping ke model.
-*/
+// RegisterRequest merepresentasikan data registrasi hoster.
+// Digunakan untuk decoding request JSON dan mapping ke model.
 type RegisterRequest struct {
 	FullName     string `json:"full_name"`
 	ProfilePhoto string `json:"profile_photo"`
@@ -37,19 +33,15 @@ type RegisterRequest struct {
 	Password     string `json:"password"`
 }
 
-/*
-Membuat handler autentikasi.
-Mengembalikan instance AuthHandler yang siap digunakan.
-*/
-func NewAuthHandler(s service.AuthService) *AuthHandler {
-	return &AuthHandler{service: s}
+// NewHosterHandler membuat handler autentikasi.
+// Mengembalikan instance HosterHandler yang siap digunakan.
+func NewHosterHandler(s service.HosterService) *HosterHandler {
+	return &HosterHandler{service: s}
 }
 
-/*
-Memproses registrasi hoster.
-Mengembalikan respons pembuatan akun sukses atau error validasi.
-*/
-func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
+// Register memproses registrasi hoster.
+// Mengembalikan respons pembuatan akun sukses atau error validasi.
+func (h *HosterHandler) Register(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		response.BadRequest(w, message.MsgNotAllowed)
 		return
@@ -75,20 +67,18 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		PasswordHash: req.Password,
 	}
 
-	authResp, err := h.service.Register(input)
+	hosterResp, err := h.service.Register(input)
 	if err != nil {
 		response.BadRequest(w, err.Error())
 		return
 	}
 
-	response.Created(w, authResp, message.MsgHosterCreatedSuccess)
+	response.Created(w, hosterResp, message.MsgHosterCreatedSuccess)
 }
 
-/*
-Memproses login hoster.
-Mengembalikan token autentikasi sukses atau error kredensial.
-*/
-func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+// LoginHoster memproses login hoster.
+// Mengembalikan token autentikasi sukses atau error kredensial.
+func (h *HosterHandler) LoginHoster(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		response.BadRequest(w, message.MsgNotAllowed)
 		return
@@ -104,20 +94,18 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authResp, err := h.service.Login(req.Email, req.Password)
+	hosterResp, err := h.service.LoginHoster(req.Email, req.Password)
 	if err != nil {
 		response.Unauthorized(w, err.Error())
 		return
 	}
 
-	response.OK(w, authResp, "Hoster logged in successfully.")
+	response.OK(w, hosterResp, message.MsgSuccess)
 }
 
-/*
-Mengambil profil hoster.
-Mengembalikan data profil jika autentikasi valid atau error jika tidak ditemukan.
-*/
-func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+// GetHosterProfile mengambil profil hoster.
+// Mengembalikan data profil jika autentikasi valid atau error jika tidak ditemukan.
+func (h *HosterHandler) GetHosterProfile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		response.BadRequest(w, message.MsgNotAllowed)
 		return
@@ -142,11 +130,9 @@ func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	response.OK(w, hoster, message.MsgSuccess)
 }
 
-/*
-Menguji endpoint terproteksi.
-Mengembalikan konfirmasi token valid dengan ID user atau error autentikasi.
-*/
-func (h *AuthHandler) TestProtected(w http.ResponseWriter, r *http.Request) {
+// TestProtected menguji endpoint terproteksi.
+// Mengembalikan konfirmasi token valid dengan ID user atau error autentikasi.
+func (h *HosterHandler) TestProtected(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserID(r)
 	if userID == "" {
 		response.Unauthorized(w, "Token gagal diverifikasi")

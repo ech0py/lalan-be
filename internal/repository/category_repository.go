@@ -9,31 +9,10 @@ import (
 )
 
 /*
-Mendefinisikan operasi repository untuk kategori.
-Menyediakan method untuk mencari, membuat, update, dan hapus kategori dengan hasil sukses atau error.
-*/
-type CategoryRepository interface {
-	FindCategoryName(name string) (*model.CategoryModel, error)
-	CreateCategory(category *model.CategoryModel) error
-	FindAll() ([]*model.CategoryModel, error)
-	FindByID(id string) (*model.CategoryModel, error)
-	Update(category *model.CategoryModel) error
-	Delete(id string) error
-}
-
-/*
 Implementasi repository kategori dengan koneksi database.
 */
 type categoryRepository struct {
 	db *sqlx.DB
-}
-
-/*
-Membuat repository kategori.
-Mengembalikan instance CategoryRepository yang siap digunakan.
-*/
-func NewCategoryRepository(db *sqlx.DB) CategoryRepository {
-	return &categoryRepository{db: db}
 }
 
 /*
@@ -152,4 +131,25 @@ func (r *categoryRepository) Delete(id string) error {
 	}
 
 	return nil
+}
+
+/*
+Mendefinisikan operasi repository untuk kategori.
+Menyediakan method untuk mencari, membuat, update, dan hapus kategori dengan hasil sukses atau error.
+*/
+type CategoryRepository interface {
+	FindCategoryName(name string) (*model.CategoryModel, error)
+	CreateCategory(category *model.CategoryModel) error
+	FindAll() ([]*model.CategoryModel, error)
+	FindByID(id string) (*model.CategoryModel, error)
+	Update(category *model.CategoryModel) error
+	Delete(id string) error
+}
+
+/*
+Membuat repository kategori.
+Mengembalikan instance CategoryRepository yang siap digunakan.
+*/
+func NewCategoryRepository(db *sqlx.DB) CategoryRepository {
+	return &categoryRepository{db: db}
 }

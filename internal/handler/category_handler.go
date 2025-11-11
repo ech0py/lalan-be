@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"lalan-be/internal/middleware"
 	"lalan-be/internal/model"
 	"lalan-be/internal/response"
 	"lalan-be/internal/service"
@@ -28,20 +29,19 @@ type CategoryRequest struct {
 }
 
 /*
-Membuat handler kategori.
-Mengembalikan instance CategoryHandler yang siap digunakan.
-*/
-func NewCategoryHandler(s service.CategoryService) *CategoryHandler {
-	return &CategoryHandler{service: s}
-}
-
-/*
 Menambahkan kategori baru.
 Mengembalikan respons pembuatan sukses atau error validasi.
 */
 func (h *CategoryHandler) AddCategory(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		response.BadRequest(w, message.MsgNotAllowed)
+		return
+	}
+
+	// Validasi role: hanya hoster yang bisa
+	userRole := middleware.GetUserRole(r)
+	if userRole != "hoster" {
+		response.Forbidden(w, "Access denied: only hosters can add categories")
 		return
 	}
 
@@ -137,6 +137,13 @@ func (h *CategoryHandler) UpdateCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Validasi role: hanya hoster yang bisa
+	userRole := middleware.GetUserRole(r)
+	if userRole != "hoster" {
+		response.Forbidden(w, "Access denied: only hosters can update categories")
+		return
+	}
+
 	// Ambil ID dari query parameter
 	id := r.URL.Query().Get("id")
 	if strings.TrimSpace(id) == "" {
@@ -191,6 +198,13 @@ func (h *CategoryHandler) DeleteCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Validasi role: hanya hoster yang bisa
+	userRole := middleware.GetUserRole(r)
+	if userRole != "hoster" {
+		response.Forbidden(w, "Access denied: only hosters can delete categories")
+		return
+	}
+
 	// Ambil ID dari query parameter
 	id := r.URL.Query().Get("id")
 	if strings.TrimSpace(id) == "" {
@@ -209,4 +223,12 @@ func (h *CategoryHandler) DeleteCategory(w http.ResponseWriter, r *http.Request)
 	}
 
 	response.OK(w, nil, message.MsgCategoryDeletedSuccess)
+}
+
+/*
+Membuat handler kategori.
+Mengembalikan instance CategoryHandler yang siap digunakan.
+*/
+func NewCategoryHandler(s service.CategoryService) *CategoryHandler {
+	return &CategoryHandler{service: s}
 }

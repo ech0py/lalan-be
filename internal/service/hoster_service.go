@@ -17,10 +17,10 @@ import (
 )
 
 /*
-Merepresentasikan respons autentikasi.
+Merepresentasikan respons autentikasi hoster.
 Digunakan untuk mengembalikan ID, token akses, refresh, tipe, dan kedaluwarsa setelah registrasi/login sukses.
 */
-type AuthResponse struct {
+type HosterResponse struct {
 	ID           string `json:"id"`
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
@@ -29,41 +29,34 @@ type AuthResponse struct {
 }
 
 /*
-Mendefinisikan operasi service autentikasi.
-Menyediakan method untuk registrasi, login, dan ambil profil dengan hasil sukses atau error.
+Custom claims dengan role untuk hoster.
 */
-type AuthService interface {
-	Register(input *model.HosterModel) (*AuthResponse, error)
-	Login(email, password string) (*AuthResponse, error)
-	GetHosterProfile(userID string) (*model.HosterModel, error)
+type HosterClaim struct {
+	jwt.RegisteredClaims
+	Role string `json:"role"`
 }
 
 /*
 Implementasi service autentikasi dengan repository.
 */
-type authService struct {
+type hosterService struct {
 	repo repository.AuthRepository
 }
 
 /*
-Membuat service autentikasi.
-Mengembalikan instance AuthService yang siap digunakan.
+Menghasilkan token JWT untuk hoster.
+Mengembalikan HosterResponse dengan token akses dan refresh atau error jika gagal.
 */
-func NewAuthService(repo repository.AuthRepository) AuthService {
-	return &authService{repo: repo}
-}
-
-/*
-Menghasilkan token JWT.
-Mengembalikan AuthResponse dengan token akses dan refresh atau error jika gagal.
-*/
-func (s *authService) generateToken(userID string) (*AuthResponse, error) {
+func (s *hosterService) generateTokenHoster(userID string) (*HosterResponse, error) {
 	// Access Token (1 jam)
 	expirationTime := time.Now().Add(1 * time.Hour)
-	claims := jwt.RegisteredClaims{
-		Subject:   userID,
-		ExpiresAt: jwt.NewNumericDate(expirationTime),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
+	claims := HosterClaim{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   userID,
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+		Role: "hoster",
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -75,7 +68,7 @@ func (s *authService) generateToken(userID string) (*AuthResponse, error) {
 	// Refresh Token (simpan di Redis nanti)
 	refreshToken := uuid.New().String()
 
-	return &AuthResponse{
+	return &HosterResponse{
 		ID:           userID,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
@@ -86,9 +79,9 @@ func (s *authService) generateToken(userID string) (*AuthResponse, error) {
 
 /*
 Mendaftarkan hoster baru.
-Mengembalikan AuthResponse dengan token atau error jika registrasi gagal.
+Mengembalikan HosterResponse dengan token atau error jika registrasi gagal.
 */
-func (s *authService) Register(input *model.HosterModel) (*AuthResponse, error) {
+func (s *hosterService) Register(input *model.HosterModel) (*HosterResponse, error) {
 	// Generate UUID untuk ID
 	input.ID = uuid.New().String()
 
@@ -106,14 +99,14 @@ func (s *authService) Register(input *model.HosterModel) (*AuthResponse, error) 
 		}
 	}
 	// Generate token (auto login)
-	return s.generateToken(input.ID)
+	return s.generateTokenHoster(input.ID)
 }
 
 /*
 Memproses login hoster.
-Mengembalikan AuthResponse dengan token atau error jika kredensial salah.
+Mengembalikan HosterResponse dengan token atau error jika kredensial salah.
 */
-func (s *authService) Login(email, password string) (*AuthResponse, error) {
+func (s *hosterService) LoginHoster(email, password string) (*HosterResponse, error) {
 	hoster, err := s.repo.FindByEmailForLogin(email)
 	if err != nil || hoster == nil {
 		return nil, errors.New(message.MsgHosterInvalidCredentials)
@@ -123,15 +116,15 @@ func (s *authService) Login(email, password string) (*AuthResponse, error) {
 		return nil, errors.New(message.MsgHosterInvalidCredentials)
 	}
 
-	return s.generateToken(hoster.ID)
+	return s.generateTokenHoster(hoster.ID)
 }
 
 /*
 Mengambil profil hoster.
 Mengembalikan data hoster atau error jika tidak ditemukan.
 */
-func (s *authService) GetHosterProfile(userID string) (*model.HosterModel, error) {
-	log.Printf("get prodile userid: %s", userID)
+func (s *hosterService) GetHosterProfile(userID string) (*model.HosterModel, error) {
+	log.Printf("get profile userid: %s", userID)
 	hoster, err := s.repo.GetHosterByID(userID)
 	if err != nil {
 		log.Printf("Error getting profile: %v", err)
@@ -141,4 +134,22 @@ func (s *authService) GetHosterProfile(userID string) (*model.HosterModel, error
 		return nil, errors.New(message.MsgHosterNotFound)
 	}
 	return hoster, nil
+}
+
+/*
+Mendefinisikan operasi service autentikasi hoster.
+Menyediakan method untuk registrasi, login, dan ambil profil dengan hasil sukses atau error.
+*/
+type HosterService interface {
+	Register(input *model.HosterModel) (*HosterResponse, error)
+	LoginHoster(email, password string) (*HosterResponse, error)
+	GetHosterProfile(userID string) (*model.HosterModel, error)
+}
+
+/*
+Membuat service autentikasi.
+Mengembalikan instance HosterService yang siap digunakan.
+*/
+func NewHosterService(repo repository.AuthRepository) HosterService {
+	return &hosterService{repo: repo}
 }

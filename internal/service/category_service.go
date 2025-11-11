@@ -11,6 +11,13 @@ import (
 )
 
 /*
+Implementasi service kategori dengan repository.
+*/
+type categoryService struct {
+	repo repository.CategoryRepository
+}
+
+/*
 Mendefinisikan operasi service kategori.
 Menyediakan method untuk menambah, ambil semua, ambil by ID, update, dan hapus kategori dengan hasil sukses atau error.
 */
@@ -20,13 +27,6 @@ type CategoryService interface {
 	GetCategoryByID(id string) (*model.CategoryModel, error)
 	UpdateCategory(id string, input *model.CategoryModel) (*model.CategoryModel, error)
 	DeleteCategory(id string) error
-}
-
-/*
-Implementasi service kategori dengan repository.
-*/
-type categoryService struct {
-	repo repository.CategoryRepository
 }
 
 /*

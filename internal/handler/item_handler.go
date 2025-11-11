@@ -11,18 +11,14 @@ import (
 	"strings"
 )
 
-/*
-Menangani operasi item.
-Menyediakan endpoint untuk menambah, mengambil, update, dan hapus item dengan autentikasi dan respons sukses atau error.
-*/
+// ItemHandler menangani operasi item.
+// Menyediakan endpoint untuk menambah, mengambil, update, dan hapus item dengan autentikasi dan respons sukses atau error.
 type ItemHandler struct {
 	service service.ItemService
 }
 
-/*
-Merepresentasikan data request item.
-Digunakan untuk decoding JSON dan validasi input.
-*/
+// ItemRequest merepresentasikan data request item.
+// Digunakan untuk decoding JSON dan validasi input.
 type ItemRequest struct {
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
@@ -35,21 +31,24 @@ type ItemRequest struct {
 	CategoryID  string   `json:"category_id"`
 }
 
-/*
-Membuat handler item.
-Mengembalikan instance ItemHandler yang siap digunakan.
-*/
+// NewItemHandler membuat handler item.
+// Mengembalikan instance ItemHandler yang siap digunakan.
 func NewItemHandler(s service.ItemService) *ItemHandler {
 	return &ItemHandler{service: s}
 }
 
-/*
-Menambahkan item baru.
-Mengembalikan respons pembuatan sukses atau error validasi/autentikasi.
-*/
+// AddItem menambahkan item baru.
+// Mengembalikan respons pembuatan sukses atau error validasi/autentikasi.
 func (h *ItemHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		response.BadRequest(w, message.MsgNotAllowed)
+		return
+	}
+
+	// Validasi role: hanya hoster yang bisa
+	userRole := middleware.GetUserRole(r)
+	if userRole != "hoster" {
+		response.Error(w, http.StatusForbidden, "Access denied: only hosters can add items")
 		return
 	}
 
@@ -107,10 +106,8 @@ func (h *ItemHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	response.Created(w, itemResp, message.MsgItemCreatedSuccess)
 }
 
-/*
-Mengambil semua item.
-Mengembalikan daftar item sukses atau error.
-*/
+// GetAllItems mengambil semua item.
+// Mengembalikan daftar item sukses atau error.
 func (h *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		response.BadRequest(w, message.MsgNotAllowed)
@@ -126,10 +123,8 @@ func (h *ItemHandler) GetAllItems(w http.ResponseWriter, r *http.Request) {
 	response.OK(w, items, message.MsgSuccess)
 }
 
-/*
-Mengambil item berdasarkan ID.
-Mengembalikan data item sukses atau error jika tidak ditemukan.
-*/
+// GetItemByID mengambil item berdasarkan ID.
+// Mengembalikan data item sukses atau error jika tidak ditemukan.
 func (h *ItemHandler) GetItemByID(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		response.BadRequest(w, message.MsgNotAllowed)
@@ -156,10 +151,8 @@ func (h *ItemHandler) GetItemByID(w http.ResponseWriter, r *http.Request) {
 	response.OK(w, item, message.MsgSuccess)
 }
 
-/*
-Mengambil item milik user.
-Mengembalikan daftar item user sukses atau error autentikasi.
-*/
+// GetMyItems mengambil item milik user.
+// Mengembalikan daftar item user sukses atau error autentikasi.
 func (h *ItemHandler) GetMyItems(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		response.BadRequest(w, message.MsgNotAllowed)
@@ -182,13 +175,18 @@ func (h *ItemHandler) GetMyItems(w http.ResponseWriter, r *http.Request) {
 	response.OK(w, items, message.MsgSuccess)
 }
 
-/*
-Mengupdate item.
-Mengembalikan respons update sukses atau error validasi/not found/autentikasi.
-*/
+// UpdateItem mengupdate item.
+// Mengembalikan respons update sukses atau error validasi/not found/autentikasi.
 func (h *ItemHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		response.BadRequest(w, message.MsgNotAllowed)
+		return
+	}
+
+	// Validasi role: hanya hoster yang bisa
+	userRole := middleware.GetUserRole(r)
+	if userRole != "hoster" {
+		response.Error(w, http.StatusForbidden, "Access denied: only hosters can update items")
 		return
 	}
 
@@ -259,13 +257,18 @@ func (h *ItemHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	response.OK(w, itemResp, message.MsgItemUpdatedSuccess)
 }
 
-/*
-Menghapus item.
-Mengembalikan respons penghapusan sukses atau error jika tidak ditemukan/autentikasi.
-*/
+// DeleteItem menghapus item.
+// Mengembalikan respons penghapusan sukses atau error jika tidak ditemukan/autentikasi.
 func (h *ItemHandler) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		response.BadRequest(w, message.MsgNotAllowed)
+		return
+	}
+
+	// Validasi role: hanya hoster yang bisa
+	userRole := middleware.GetUserRole(r)
+	if userRole != "hoster" {
+		response.Error(w, http.StatusForbidden, "Access denied: only hosters can delete items")
 		return
 	}
 

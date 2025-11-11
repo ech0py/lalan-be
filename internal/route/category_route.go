@@ -8,7 +8,7 @@ import (
 
 /*
 Mendaftarkan route kategori.
-Menyiapkan endpoint untuk menambah, update, hapus (terproteksi) dan list/detail (publik).
+Menyiapkan endpoint untuk operasi kategori dengan proteksi yang sesuai.
 */
 func CategoryRoutes(h *handler.CategoryHandler) {
 	v1 := "/v1/category"

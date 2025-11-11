@@ -10,26 +10,10 @@ import (
 )
 
 /*
-Mendefinisikan operasi service TAC.
-Menyediakan method untuk menambah TAC dengan hasil sukses atau error.
-*/
-type TermsAndConditionsService interface {
-	AddTermsAndConditions(input *model.TermsAndConditionsModel) (*model.TermsAndConditionsModel, error)
-}
-
-/*
 Implementasi service TAC dengan repository.
 */
 type termsAndConditionsService struct {
 	repo repository.TermsAndConditionsRepository
-}
-
-/*
-Membuat service TAC.
-Mengembalikan instance TermsAndConditionsService yang siap digunakan.
-*/
-func NewTermsAndConditionsService(repo repository.TermsAndConditionsRepository) TermsAndConditionsService {
-	return &termsAndConditionsService{repo: repo}
 }
 
 /*
@@ -65,4 +49,20 @@ func (s *termsAndConditionsService) AddTermsAndConditions(input *model.TermsAndC
 
 	// Mendapatkan TAC yang baru dibuat
 	return s.repo.FindByUserID(input.UserID)
+}
+
+/*
+Mendefinisikan operasi service TAC.
+Menyediakan method untuk menambah TAC dengan hasil sukses atau error.
+*/
+type TermsAndConditionsService interface {
+	AddTermsAndConditions(input *model.TermsAndConditionsModel) (*model.TermsAndConditionsModel, error)
+}
+
+/*
+Membuat service TAC.
+Mengembalikan instance TermsAndConditionsService yang siap digunakan.
+*/
+func NewTermsAndConditionsService(repo repository.TermsAndConditionsRepository) TermsAndConditionsService {
+	return &termsAndConditionsService{repo: repo}
 }

@@ -1,4 +1,3 @@
-// internal/response/response.go
 package response
 
 import (
@@ -76,4 +75,12 @@ Mengembalikan respons JSON dengan status Unauthorized dan pesan.
 */
 func Unauthorized(w http.ResponseWriter, msg string) {
 	Error(w, http.StatusUnauthorized, msg)
+}
+
+/*
+Mengirim respons Forbidden.
+Mengembalikan respons JSON dengan status Forbidden dan pesan.
+*/
+func Forbidden(w http.ResponseWriter, message string) {
+	Error(w, http.StatusForbidden, message)
 }

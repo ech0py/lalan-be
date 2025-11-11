@@ -98,9 +98,8 @@ go build -o main ./cmd/main.go
 
 ```
 {
-  "initial": "Analyze this file to grasp its role.",
-  "after": "Delete any comment that restates code or is outdated.",
-  "new": "Reorder per Go layout: const → var → init → types → funcs. Add /* ... */ block comments in Indonesian, ≤2 lines each. Cover only purpose + expected outcome. Zero implementation echo. Uniform style."
+  "initial": "Analyze this file to grasp its role. Map every const, var, type, func, method, init, and interface.",
+  "after": "Delete **ALL** existing comments (// or /* */). Zero tolerance.",
+  "new": "Reorder per strict Go layout: package → imports → const → var → init → types (+ receiver methods) → interfaces → funcs (main last).\n\nAdd exactly one /* */ block comment in Bahasa Indonesia before:\n- Each const group\n- Each var group\n- Each type\n- Each exported func/method\n- Each unexported func/method if >1 line or has side effects\n\nFormat: [Tujuan utama]. [Hasil/kembalian yang diharapkan].\nIf comment exceeds 2 lines when wrapped at 100 chars, split into 2 lines max. Use line break after period.\n\nZero code echo. Zero English. Uniform style."
 }
 ```
-  

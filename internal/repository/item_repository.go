@@ -10,32 +10,10 @@ import (
 )
 
 /*
-Mendefinisikan operasi repository untuk item.
-Menyediakan method untuk mencari, membuat, update, dan hapus item dengan hasil sukses atau error.
-*/
-type ItemRepository interface {
-	FindItemNameByUserID(name string, userId string) (*model.ItemModel, error)
-	CreateItem(item *model.ItemModel) error
-	FindAll() ([]*model.ItemModel, error)
-	FindByID(id string) (*model.ItemModel, error)
-	FindByUserID(userID string) ([]*model.ItemModel, error)
-	Update(item *model.ItemModel) error
-	Delete(id string) error
-}
-
-/*
 Implementasi repository item dengan koneksi database.
 */
 type itemRepository struct {
 	db *sqlx.DB
-}
-
-/*
-Membuat repository item.
-Mengembalikan instance ItemRepository yang siap digunakan.
-*/
-func NewItemRepository(db *sqlx.DB) ItemRepository {
-	return &itemRepository{db: db}
 }
 
 /*
@@ -269,4 +247,26 @@ func (r *itemRepository) Delete(id string) error {
 	}
 
 	return nil
+}
+
+/*
+Mendefinisikan operasi repository untuk item.
+Menyediakan method untuk mencari, membuat, update, dan hapus item dengan hasil sukses atau error.
+*/
+type ItemRepository interface {
+	FindItemNameByUserID(name string, userId string) (*model.ItemModel, error)
+	CreateItem(item *model.ItemModel) error
+	FindAll() ([]*model.ItemModel, error)
+	FindByID(id string) (*model.ItemModel, error)
+	FindByUserID(userID string) ([]*model.ItemModel, error)
+	Update(item *model.ItemModel) error
+	Delete(id string) error
+}
+
+/*
+Membuat repository item.
+Mengembalikan instance ItemRepository yang siap digunakan.
+*/
+func NewItemRepository(db *sqlx.DB) ItemRepository {
+	return &itemRepository{db: db}
 }
