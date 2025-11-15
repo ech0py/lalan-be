@@ -1,11 +1,8 @@
 package message
 
-/*
-Mendefinisikan konstanta pesan untuk respons API.
-Menyediakan pesan standar untuk sukses, error, dan validasi berdasarkan domain.
-*/
+// Konstanta pesan untuk respons API.
 const (
-	// General
+	// Pesan umum
 	MsgSuccess              = "Success."
 	MsgBadRequest           = "Bad request."
 	MsgUnauthorized         = "Unauthorized."
@@ -14,7 +11,7 @@ const (
 	MsgUserIDRequired       = "User ID is required."
 	MsgFailedToHashPassword = "Failed to hash password."
 
-	// Authentication / Hoster
+	// Pesan autentikasi hoster
 	MsgHosterCreatedSuccess     = "Hoster created successfully."
 	MsgHosterCreatedFailed      = "Failed to create hoster."
 	MsgHosterLoginSuccess       = "Hoster logged in successfully."
@@ -26,7 +23,7 @@ const (
 	MsgHosterNotFound           = "Hoster not found."
 	MsgHosterFetched            = "Hoster data retrieved successfully."
 
-	// Authentication / Customer
+	// Pesan autentikasi customer
 	MsgCustomerCreatedSuccess     = "Customer created successfully."
 	MsgCustomerCreatedFailed      = "Failed to create customer."
 	MsgCustomerLoginSuccess       = "Customer logged in successfully."
@@ -35,11 +32,10 @@ const (
 	MsgCustomerInvalidCredentials = "Invalid email or password."
 	MsgCustomerEmailExists        = "A customer with this email already exists."
 	MsgCustomerWeakPassword       = "The provided password is too weak."
+	MsgCustomerNotFound           = "Customer not found."
+	MsgCustomerFetched            = "Customer data retrieved successfully."
 
-	MsgCustomerNotFound = "Customer not found."
-	MsgCustomerFetched  = "Customer data retrieved successfully."
-
-	// Category
+	// Pesan kategori
 	MsgCategoryCreatedSuccess = "Category created successfully."
 	MsgCategoryUpdatedSuccess = "Category updated successfully."
 	MsgCategoryDeletedSuccess = "Category deleted successfully."
@@ -49,21 +45,20 @@ const (
 	MsgCategoryNameTooLong    = "Category name must not exceed 255 characters."
 	MsgCategoryIDRequired     = "Category ID is required."
 
-	// Item
-	MsgItemCreatedSuccess = "Item created successfully."
-	MsgItemUpdatedSuccess = "Item updated successfully."
-	MsgItemDeletedSuccess = "Item deleted successfully."
-	MsgItemNameExists     = "Item name already exists."
-	MsgItemNotFound       = "Item not found."
-	MsgItemNameRequired   = "Item name is required."
-	MsgItemNameTooLong    = "Item name must not exceed 255 characters."
-	MsgItemIDRequired     = "Item ID is required."
-
+	// Pesan item
+	MsgItemCreatedSuccess     = "Item created successfully."
+	MsgItemUpdatedSuccess     = "Item updated successfully."
+	MsgItemDeletedSuccess     = "Item deleted successfully."
+	MsgItemNameExists         = "Item name already exists."
+	MsgItemNotFound           = "Item not found."
+	MsgItemNameRequired       = "Item name is required."
+	MsgItemNameTooLong        = "Item name must not exceed 255 characters."
+	MsgItemIDRequired         = "Item ID is required."
 	MsgItemStockInvalid       = "Item stock cannot be negative."
 	MsgItemPricePerDayInvalid = "Item price per day cannot be negative."
 	MsgItemDepositInvalid     = "Item deposit cannot be negative."
 
-	// Term and Conditions
+	// Pesan terms and conditions
 	MsgTermAndConditionsCreatedSuccess      = "Terms and conditions created successfully."
 	MsgTermAndConditionsUpdatedSuccess      = "Terms and conditions updated successfully."
 	MsgTermAndConditionsDeletedSuccess      = "Terms and conditions deleted successfully."
