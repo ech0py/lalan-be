@@ -1,6 +1,10 @@
 package message
 
-// Konstanta pesan untuk respons API.
+/*
+	Konstanta untuk pesan respons API.
+
+Berisi pesan umum dan spesifik untuk berbagai operasi.
+*/
 const (
 	// Pesan umum
 	MsgSuccess              = "Success."

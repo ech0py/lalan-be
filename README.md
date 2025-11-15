@@ -98,18 +98,9 @@ go build -o main ./cmd/main.go
 
 ```
 {
-    "instruction": "Kamu adalah senior Go engineer. Hapus SEMUA komentar lama di file Go ini. Rapikan kode sesuai Go best practice: urutkan import (std → third-party → internal), indentasi 4 spasi, spasi konsisten, nama variabel jelas. JANGAN ubah logika, nama fungsi, struct, atau package. Tambahkan komentar BARU dalam bahasa Indonesia: singkat, teknis, tepat sasaran — tanpa bertele-tele. Gunakan /* ... */ hanya untuk >1 baris, // untuk 1 baris. Komentari di atas struct, func, dan blok utama di file ini.",
-    "rules": [
-        "Hapus 100% komentar lama di file ini.",
-        "JANGAN ubah nama fungsi/variabel/struct/package.",
-        "JANGAN ubah/hapus logika kode.",
-        "Import: std → third-party → internal.",
-        "Indentasi: 4 spasi.",
-        "Spasi: `a + b`, `f(x, y)`.",
-        "Komentar: bahasa Indonesia, singkat, teknis, langsung ke inti — no fluff.",
-        "/* ... */ → penjelasan >1 baris.",
-        "// → catatan 1 baris.",
-        "Wajib komentari: struct, func, blok kunci (handler, loop, conditional)."
-    ]
+  "initial": "Analyze this file to understand its role. Identify every const, var, type, func, method, init, and interface.",
+  "after": "Remove all existing comments (// or /* */). No exceptions.",
+  "new": "Reorder strictly using standard Go layout: package → imports → const → var → init → types (with methods) → interfaces → funcs (main last).\n\nBefore each element below, add exactly one block comment /* */ written in Indonesian:\n- Every const group\n- Every var group\n- Every type\n- Every function/method (exported or unexported if more than one line or has side effects)\n\nEach block comment must contain EXACTLY TWO LINES:\nLine 1: Tujuan utama fungsi/type/blok.\nLine 2: Hasil atau nilai yang dikembalikan.\n\nMandatory example format:\n\"\"\"\n/* Menginisialisasi koneksi ke PostgreSQL.\nMengembalikan konfigurasi database jika proses berhasil. */\n\"\"\"\n\nRestrictions:\n- Output comments must be in Indonesian only.\n- Maximum two lines.\n- Follow the exact two-sentence pattern with no creative variation.\n- Do not add or modify functional code.\n- Do not echo any code inside this instruction output."
 }
+
 ```

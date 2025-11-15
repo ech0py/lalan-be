@@ -11,22 +11,38 @@ import (
 	"lalan-be/internal/response"
 )
 
-// Type untuk context key.
-type contextKey string
+/*
+	Konstanta untuk kunci konteks.
 
-// Struct untuk claims JWT.
-type Claims struct {
-	jwt.RegisteredClaims
-	Role string `json:"role"`
-}
-
-// Konstanta untuk context keys.
+Menentukan kunci untuk user ID dan role.
+*/
 const (
 	UserIDKey   contextKey = "user_id"
 	UserRoleKey contextKey = "user_role"
 )
 
-// Fungsi middleware untuk validasi JWT.
+/*
+	Type untuk kunci konteks.
+
+Digunakan untuk menyimpan nilai dalam konteks.
+*/
+type contextKey string
+
+/*
+	Struktur untuk claims JWT.
+
+Berisi claims standar dan role pengguna.
+*/
+type Claims struct {
+	jwt.RegisteredClaims
+	Role string `json:"role"`
+}
+
+/*
+	Memvalidasi token JWT.
+
+Konteks diperbarui dengan user ID dan role jika valid.
+*/
 func JWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Cek header authorization
@@ -63,13 +79,21 @@ func JWTMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// Fungsi untuk dapatkan user ID dari context.
+/*
+	Mengambil user ID dari konteks.
+
+User ID dikembalikan sebagai string.
+*/
 func GetUserID(r *http.Request) string {
 	id, _ := r.Context().Value(UserIDKey).(string)
 	return id
 }
 
-// Fungsi untuk dapatkan user role dari context.
+/*
+	Mengambil user role dari konteks.
+
+User role dikembalikan sebagai string.
+*/
 func GetUserRole(r *http.Request) string {
 	role, _ := r.Context().Value(UserRoleKey).(string)
 	return role

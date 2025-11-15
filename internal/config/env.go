@@ -7,47 +7,59 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Fungsi untuk mengambil rahasia JWT.
+/*
+	Variabel untuk menandai status pemuatan environment.
+
+Menunjukkan apakah environment sudah dimuat.
+*/
+var envLoaded bool
+
+/*
+	Mengambil rahasia JWT dari environment.
+
+Rahasia JWT dikembalikan sebagai byte slice.
+*/
 func GetJWTSecret() []byte {
 	secret := GetEnv("JWT_SECRET", "tesingdev")
 	return []byte(secret)
 }
 
-// Flag untuk status pemuatan environment.
-var envLoaded bool
+/*
+	Memuat file environment jika belum dimuat.
 
-// Fungsi untuk memuat environment.
+Environment dimuat dari file .env.dev jika bukan produksi.
+*/
 func LoadEnv() {
-	// Cek status pemuatan
 	if envLoaded {
 		return
 	}
-
-	// Muat .env.dev jika bukan produksi
 	if os.Getenv("APP_ENV") != "production" {
 		_ = godotenv.Load(".env.dev")
 	}
-
 	envLoaded = true
 }
 
-// Fungsi untuk mengambil environment dengan fallback.
+/*
+	Mengambil nilai environment dengan fallback.
+
+Nilai environment atau fallback dikembalikan.
+*/
 func GetEnv(key, fallback string) string {
 	LoadEnv()
-
-	// Return nilai jika ada
 	if v := os.Getenv(key); v != "" {
 		return v
 	}
 	return fallback
 }
 
-// Fungsi untuk mengambil environment wajib.
+/*
+	Mengambil nilai environment yang wajib.
+
+Nilai environment dikembalikan atau program dihentikan.
+*/
 func MustGetEnv(key string) string {
 	LoadEnv()
-
 	v := os.Getenv(key)
-	// Fatal jika kosong
 	if v == "" {
 		log.Fatalf("Missing required environment variable: %s", key)
 	}
