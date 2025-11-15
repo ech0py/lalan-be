@@ -98,8 +98,18 @@ go build -o main ./cmd/main.go
 
 ```
 {
-  "initial": "Analyze this file to grasp its role. Map every const, var, type, func, method, init, and interface.",
-  "after": "Delete **ALL** existing comments (// or /* */). Zero tolerance.",
-  "new": "Reorder per strict Go layout: package → imports → const → var → init → types (+ receiver methods) → interfaces → funcs (main last).\n\nAdd exactly one /* */ block comment in Bahasa Indonesia before:\n- Each const group\n- Each var group\n- Each type\n- Each exported func/method\n- Each unexported func/method if >1 line or has side effects\n\nFormat: [Tujuan utama]. [Hasil/kembalian yang diharapkan].\nIf comment exceeds 2 lines when wrapped at 100 chars, split into 2 lines max. Use line break after period.\n\nZero code echo. Zero English. Uniform style."
+    "instruction": "Kamu adalah senior Go engineer. Hapus SEMUA komentar lama di file Go ini. Rapikan kode sesuai Go best practice: urutkan import (std → third-party → internal), indentasi 4 spasi, spasi konsisten, nama variabel jelas. JANGAN ubah logika, nama fungsi, struct, atau package. Tambahkan komentar BARU dalam bahasa Indonesia: singkat, teknis, tepat sasaran — tanpa bertele-tele. Gunakan /* ... */ hanya untuk >1 baris, // untuk 1 baris. Komentari di atas struct, func, dan blok utama di file ini.",
+    "rules": [
+        "Hapus 100% komentar lama di file ini.",
+        "JANGAN ubah nama fungsi/variabel/struct/package.",
+        "JANGAN ubah/hapus logika kode.",
+        "Import: std → third-party → internal.",
+        "Indentasi: 4 spasi.",
+        "Spasi: `a + b`, `f(x, y)`.",
+        "Komentar: bahasa Indonesia, singkat, teknis, langsung ke inti — no fluff.",
+        "/* ... */ → penjelasan >1 baris.",
+        "// → catatan 1 baris.",
+        "Wajib komentari: struct, func, blok kunci (handler, loop, conditional)."
+    ]
 }
 ```

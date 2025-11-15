@@ -1,17 +1,22 @@
-package handler
+package public
 
 import (
-	"lalan-be/internal/features/public/service"
+	"log"
+	"net/http"
+
 	"lalan-be/internal/response"
 	"lalan-be/pkg/message"
-	"net/http"
 )
 
+// Struct untuk handler public.
 type PublicHandler struct {
-	service service.PublicService
+	service PublicService
 }
 
+// Fungsi untuk dapatkan daftar kategori.
 func (h *PublicHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
+	log.Printf("GetCategories: received request")
+	// Cek method GET
 	if r.Method != http.MethodGet {
 		response.BadRequest(w, message.MsgNotAllowed)
 		return
@@ -26,6 +31,7 @@ func (h *PublicHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
 	response.OK(w, categories, message.MsgSuccess)
 }
 
-func NewPublicHandler(s service.PublicService) *PublicHandler {
+// Fungsi untuk membuat handler public.
+func NewPublicHandler(s PublicService) *PublicHandler {
 	return &PublicHandler{service: s}
 }

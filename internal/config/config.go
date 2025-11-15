@@ -1,81 +1,67 @@
 package config
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"os"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
-/* Menyimpan koneksi database. Struct dengan field DB. */
+// Struct untuk konfigurasi database.
 type Config struct {
-	DB *sqlx.DB
+	DB      *sqlx.DB
+	User    string
+	Pass    string
+	Host    string
+	Port    string
+	DBName  string
+	SSLMode string
 }
 
-/* Mengambil nilai environment dengan fallback. Mengembalikan string nilai atau fallback. */
-func getEnv(key, fallback string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return fallback
-}
-
-/* Menginisialisasi koneksi database PostgreSQL. Mengembalikan pointer ke Config atau error jika gagal. */
+/*
+Fungsi untuk inisialisasi koneksi database PostgreSQL.
+Menggunakan variabel environment, mengembalikan Config atau error.
+*/
 func DatabaseConfig() (*Config, error) {
-	_ = godotenv.Load(".env.dev")
+	user := MustGetEnv("DB_USER")
+	pass := MustGetEnv("DB_PASSWORD")
+	host := MustGetEnv("DB_HOST")
+	port := MustGetEnv("DB_PORT")
+	name := MustGetEnv("DB_NAME")
 
-	user := getEnv("DB_USER", "")
-	password := getEnv("DB_PASSWORD", "")
-	host := getEnv("DB_HOST", "")
-	port := getEnv("DB_PORT", "")
-	name := getEnv("DB_NAME", "")
-
-	if user == "" || password == "" || host == "" || port == "" || name == "" {
-		return nil, fmt.Errorf("DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME are required")
+	// Default SSLMode
+	ssl := os.Getenv("DB_SSL_MODE")
+	if ssl == "" {
+		ssl = "require"
 	}
 
-	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", user, password, host, port, name)
+	// Buat DSN
+	dsn := fmt.Sprintf(
+		"postgresql://%s:%s@%s:%s/%s?sslmode=%s",
+		user, pass, host, port, name, ssl,
+	)
 
+	// Koneksi database
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
+		return nil, fmt.Errorf("failed DB connect: %w", err)
 	}
 
+	// Ping untuk verifikasi
 	if err := db.Ping(); err != nil {
 		db.Close()
-		return nil, fmt.Errorf("failed to ping database: %w", err)
+		return nil, fmt.Errorf("failed DB ping: %w", err)
 	}
 
-	return &Config{DB: db}, nil
-}
-
-/* Test koneksi database menggunakan pgx untuk verifikasi tambahan. Tidak mengembalikan nilai, log sukses atau fatal error. */
-func TestDatabaseConnection(dsn string) {
-	conn, err := pgx.Connect(context.Background(), dsn)
-	if err != nil {
-		log.Fatalf("Failed to connect to the database: %v", err)
-	}
-	defer conn.Close(context.Background())
-
-	var result int
-	err = conn.QueryRow(context.Background(), "SELECT 1").Scan(&result)
-	if err != nil {
-		log.Fatalf("Failed to execute test query: %v", err)
-	}
-
-	log.Println("Database connection test successful")
-}
-
-/* Mengambil secret JWT dari environment. Mengembalikan byte slice secret. */
-func GetJWTSecret() []byte {
-	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		return []byte("testingfordev")
-	}
-	return []byte(secret)
+	// Return Config
+	return &Config{
+		DB:      db,
+		User:    user,
+		Pass:    pass,
+		Host:    host,
+		Port:    port,
+		DBName:  name,
+		SSLMode: ssl,
+	}, nil
 }
