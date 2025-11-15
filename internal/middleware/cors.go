@@ -6,7 +6,11 @@ import (
 	"lalan-be/internal/config"
 )
 
-// Fungsi middleware untuk handle CORS.
+/*
+	Menangani permintaan CORS.
+
+Header CORS ditetapkan dan request diteruskan.
+*/
 func CORSMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Setup CORS berdasarkan env

@@ -8,7 +8,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// Struct untuk konfigurasi database.
+/*
+	Struktur untuk menyimpan konfigurasi database.
+
+Berisi koneksi DB dan parameter koneksi.
+*/
 type Config struct {
 	DB      *sqlx.DB
 	User    string
@@ -20,8 +24,9 @@ type Config struct {
 }
 
 /*
-Fungsi untuk inisialisasi koneksi database PostgreSQL.
-Menggunakan variabel environment, mengembalikan Config atau error.
+	Menginisialisasi koneksi database PostgreSQL.
+
+Konfigurasi database dikembalikan jika berhasil.
 */
 func DatabaseConfig() (*Config, error) {
 	user := MustGetEnv("DB_USER")
@@ -29,32 +34,22 @@ func DatabaseConfig() (*Config, error) {
 	host := MustGetEnv("DB_HOST")
 	port := MustGetEnv("DB_PORT")
 	name := MustGetEnv("DB_NAME")
-
-	// Default SSLMode
 	ssl := os.Getenv("DB_SSL_MODE")
 	if ssl == "" {
 		ssl = "require"
 	}
-
-	// Buat DSN
 	dsn := fmt.Sprintf(
 		"postgresql://%s:%s@%s:%s/%s?sslmode=%s",
 		user, pass, host, port, name, ssl,
 	)
-
-	// Koneksi database
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed DB connect: %w", err)
 	}
-
-	// Ping untuk verifikasi
 	if err := db.Ping(); err != nil {
 		db.Close()
 		return nil, fmt.Errorf("failed DB ping: %w", err)
 	}
-
-	// Return Config
 	return &Config{
 		DB:      db,
 		User:    user,

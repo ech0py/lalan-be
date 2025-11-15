@@ -15,21 +15,20 @@ import (
 	"lalan-be/pkg/message"
 )
 
-// Struct untuk service admin.
+/*
+	Struktur untuk layanan admin.
+
+Menyediakan logika bisnis untuk operasi admin.
+*/
 type adminService struct {
 	repo AdminRepository
 }
 
-// Struct untuk response admin.
-type AdminResponse struct {
-	ID           string `json:"id"`
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	TokenType    string `json:"token_type"`
-	ExpiresIn    int    `json:"expires_in"`
-}
+/*
+	Menghasilkan token JWT untuk admin.
 
-// Fungsi untuk generate token admin.
+Respons token dikembalikan jika berhasil.
+*/
 func (s *adminService) generateTokenAdmin(userID string) (*AdminResponse, error) {
 	exp := time.Now().Add(1 * time.Hour)
 
@@ -57,7 +56,11 @@ func (s *adminService) generateTokenAdmin(userID string) (*AdminResponse, error)
 	}, nil
 }
 
-// Fungsi untuk login admin.
+/*
+	Mengautentikasi admin dengan email dan password.
+
+Respons token dikembalikan jika berhasil.
+*/
 func (s *adminService) LoginAdmin(email, password string) (*AdminResponse, error) {
 	admin, err := s.repo.FindByEmailAdminForLogin(email)
 	// Cek error atau admin tidak ada
@@ -73,7 +76,11 @@ func (s *adminService) LoginAdmin(email, password string) (*AdminResponse, error
 	return s.generateTokenAdmin(admin.ID)
 }
 
-// Fungsi untuk membuat admin.
+/*
+	Membuat admin baru dengan hashing password.
+
+Admin berhasil dibuat atau error dikembalikan.
+*/
 func (s *adminService) CreateAdmin(admin *model.AdminModel) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(admin.PasswordHash), bcrypt.DefaultCost)
 	if err != nil {
@@ -95,7 +102,11 @@ func (s *adminService) CreateAdmin(admin *model.AdminModel) error {
 	return nil
 }
 
-// Fungsi untuk membuat kategori.
+/*
+	Membuat kategori baru dengan validasi nama.
+
+Kategori berhasil dibuat atau error dikembalikan.
+*/
 func (s *adminService) CreateCategory(category *model.CategoryModel) error {
 	existing, err := s.repo.FindCategoryByName(category.Name)
 	if err != nil {
@@ -112,18 +123,43 @@ func (s *adminService) CreateCategory(category *model.CategoryModel) error {
 	return s.repo.CreateCategory(category)
 }
 
-// Fungsi untuk update kategori.
+/*
+	Memperbarui kategori.
+
+Kategori berhasil diperbarui atau error dikembalikan.
+*/
 func (s *adminService) UpdateCategory(category *model.CategoryModel) error {
 	category.UpdatedAt = time.Now()
 	return s.repo.UpdateCategory(category)
 }
 
-// Fungsi untuk hapus kategori.
+/*
+	Menghapus kategori.
+
+Kategori berhasil dihapus atau error dikembalikan.
+*/
 func (s *adminService) DeleteCategory(id string) error {
 	return s.repo.DeleteCategory(id)
 }
 
-// Interface untuk service admin.
+/*
+	Struktur untuk respons admin.
+
+Berisi data token dan informasi pengguna.
+*/
+type AdminResponse struct {
+	ID           string `json:"id"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int    `json:"expires_in"`
+}
+
+/*
+	Antarmuka untuk layanan admin.
+
+Mendefinisikan metode untuk operasi admin dan kategori.
+*/
 type AdminService interface {
 	CreateAdmin(*model.AdminModel) error
 	LoginAdmin(email, password string) (*AdminResponse, error)
@@ -132,7 +168,11 @@ type AdminService interface {
 	DeleteCategory(id string) error
 }
 
-// Fungsi untuk membuat service admin.
+/*
+	Membuat instance baru dari AdminService.
+
+Instance layanan dikembalikan.
+*/
 func NewAdminService(repo AdminRepository) AdminService {
 	return &adminService{repo: repo}
 }
