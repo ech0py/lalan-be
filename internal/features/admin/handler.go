@@ -13,18 +13,16 @@ import (
 )
 
 /*
-	Struktur untuk menangani permintaan admin.
-
-Menyediakan metode untuk operasi admin dan kategori.
+Struktur untuk handler admin.
+Struktur ini menangani permintaan terkait admin.
 */
 type AdminHandler struct {
 	service AdminService
 }
 
 /*
-	Struktur data untuk permintaan pembuatan admin.
-
-Data terstruktur untuk validasi dan pemrosesan.
+Struktur untuk permintaan pembuatan admin.
+Struktur ini berisi data yang diperlukan untuk membuat admin baru.
 */
 type AdminRequest struct {
 	FullName string `json:"full_name"`
@@ -33,9 +31,8 @@ type AdminRequest struct {
 }
 
 /*
-	Struktur data untuk permintaan login admin.
-
-Data terstruktur untuk autentikasi.
+Struktur untuk permintaan login admin.
+Struktur ini berisi kredensial untuk autentikasi admin.
 */
 type LoginRequest struct {
 	Email    string `json:"email"`
@@ -43,9 +40,8 @@ type LoginRequest struct {
 }
 
 /*
-	Struktur data untuk permintaan kategori.
-
-Data terstruktur untuk validasi dan pemrosesan.
+Struktur untuk permintaan kategori.
+Struktur ini berisi data untuk operasi kategori.
 */
 type CategoryRequest struct {
 	Name        string `json:"name"`
@@ -53,9 +49,8 @@ type CategoryRequest struct {
 }
 
 /*
-	Membuat admin baru berdasarkan permintaan.
-
-Admin berhasil dibuat atau error dikembalikan.
+Metode untuk membuat admin baru.
+Metode ini memvalidasi input dan membuat admin melalui layanan.
 */
 func (h *AdminHandler) CreateAdmin(w http.ResponseWriter, r *http.Request) {
 	log.Printf("CreateAdmin: received request")
@@ -112,9 +107,8 @@ func (h *AdminHandler) CreateAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Mengautentikasi admin dengan email dan password.
-
-Token akses dan data pengguna dikembalikan jika berhasil.
+Metode untuk login admin.
+Metode ini memvalidasi kredensial dan mengembalikan token autentikasi.
 */
 func (h *AdminHandler) LoginAdmin(w http.ResponseWriter, r *http.Request) {
 	log.Printf("LoginAdmin: received request")
@@ -178,9 +172,8 @@ func (h *AdminHandler) LoginAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Membuat kategori baru berdasarkan permintaan.
-
-Kategori berhasil dibuat atau error dikembalikan.
+Metode untuk membuat kategori baru.
+Metode ini memvalidasi input dan membuat kategori melalui layanan.
 */
 func (h *AdminHandler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 	log.Printf("CreateCategory: received request")
@@ -230,9 +223,8 @@ func (h *AdminHandler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Memperbarui kategori berdasarkan ID.
-
-Kategori berhasil diperbarui atau error dikembalikan.
+Metode untuk memperbarui kategori.
+Metode ini memvalidasi input dan memperbarui kategori melalui layanan.
 */
 func (h *AdminHandler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	log.Printf("UpdateCategory: received request")
@@ -291,9 +283,8 @@ func (h *AdminHandler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Menghapus kategori berdasarkan ID.
-
-Kategori berhasil dihapus atau error dikembalikan.
+Metode untuk menghapus kategori.
+Metode ini menghapus kategori berdasarkan ID melalui layanan.
 */
 func (h *AdminHandler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	log.Printf("DeleteCategory: received request")
@@ -322,9 +313,8 @@ func (h *AdminHandler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	Membuat instance baru dari AdminHandler.
-
-Instance AdminHandler dikembalikan.
+Fungsi untuk membuat instance baru dari AdminHandler.
+Instance handler dikembalikan.
 */
 func NewAdminHandler(s AdminService) *AdminHandler {
 	return &AdminHandler{service: s}

@@ -3,8 +3,8 @@ package model
 import "time"
 
 /*
-Merepresentasikan data pelanggan.
-Digunakan untuk mapping JSON dan database dengan field ID, nama, email, dll.
+Struktur untuk model admin.
+Struktur ini merepresentasikan data admin dengan field yang diperlukan.
 */
 type AdminModel struct {
 	ID           string    `json:"id" db:"id"`

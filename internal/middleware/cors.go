@@ -7,9 +7,8 @@ import (
 )
 
 /*
-	Menangani permintaan CORS.
-
-Header CORS ditetapkan dan request diteruskan.
+Fungsi untuk menangani middleware CORS.
+Middleware CORS diterapkan pada handler berikutnya.
 */
 func CORSMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

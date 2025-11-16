@@ -10,17 +10,15 @@ import (
 )
 
 /*
-	Struktur untuk repositori admin.
-
-Menyediakan akses ke operasi database untuk admin.
+Struktur untuk repositori admin.
+Struktur ini menyediakan akses ke operasi database untuk admin.
 */
 type adminRepository struct {
 	db *sqlx.DB
 }
 
 /*
-	Membuat admin baru di database.
-
+Metode untuk membuat admin baru di database.
 ID dan timestamp admin dikembalikan setelah penyisipan.
 */
 func (r *adminRepository) CreateAdmin(admin *model.AdminModel) error {
@@ -40,8 +38,7 @@ func (r *adminRepository) CreateAdmin(admin *model.AdminModel) error {
 }
 
 /*
-	Mencari admin berdasarkan email untuk login.
-
+Metode untuk mencari admin berdasarkan email untuk login.
 Model admin dikembalikan jika ditemukan.
 */
 func (r *adminRepository) FindByEmailAdminForLogin(email string) (*model.AdminModel, error) {
@@ -58,7 +55,6 @@ func (r *adminRepository) FindByEmailAdminForLogin(email string) (*model.AdminMo
 		WHERE email = $1
 	`
 	err := r.db.Get(&admin, query, email)
-	// Cek jika tidak ada row
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Printf("FindByEmailAdminForLogin: no admin found for email %s", email)
@@ -72,8 +68,7 @@ func (r *adminRepository) FindByEmailAdminForLogin(email string) (*model.AdminMo
 }
 
 /*
-	Membuat kategori baru di database.
-
+Metode untuk membuat kategori baru di database.
 ID dan timestamp kategori dikembalikan setelah penyisipan.
 */
 func (r *adminRepository) CreateCategory(category *model.CategoryModel) error {
@@ -92,8 +87,7 @@ func (r *adminRepository) CreateCategory(category *model.CategoryModel) error {
 }
 
 /*
-	Memperbarui kategori di database.
-
+Metode untuk memperbarui kategori di database.
 Kategori berhasil diperbarui atau error dikembalikan.
 */
 func (r *adminRepository) UpdateCategory(category *model.CategoryModel) error {
@@ -111,8 +105,7 @@ func (r *adminRepository) UpdateCategory(category *model.CategoryModel) error {
 }
 
 /*
-	Menghapus kategori dari database.
-
+Metode untuk menghapus kategori dari database.
 Kategori berhasil dihapus atau error dikembalikan.
 */
 func (r *adminRepository) DeleteCategory(id string) error {
@@ -123,8 +116,7 @@ func (r *adminRepository) DeleteCategory(id string) error {
 }
 
 /*
-	Mencari kategori berdasarkan nama.
-
+Metode untuk mencari kategori berdasarkan nama.
 Model kategori dikembalikan jika ditemukan.
 */
 func (r *adminRepository) FindCategoryByName(name string) (*model.CategoryModel, error) {
@@ -140,7 +132,6 @@ func (r *adminRepository) FindCategoryByName(name string) (*model.CategoryModel,
 		WHERE name = $1
 	`
 	err := r.db.Get(&category, query, name)
-	// Cek jika tidak ada row
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Printf("FindCategoryByName: no category found for name %s", name)
@@ -154,8 +145,7 @@ func (r *adminRepository) FindCategoryByName(name string) (*model.CategoryModel,
 }
 
 /*
-	Mencari kategori berdasarkan nama kecuali ID.
-
+Metode untuk mencari kategori berdasarkan nama kecuali ID.
 Model kategori dikembalikan jika ditemukan.
 */
 func (r *adminRepository) FindCategoryByNameExceptID(name string, id string) (*model.CategoryModel, error) {
@@ -171,7 +161,6 @@ func (r *adminRepository) FindCategoryByNameExceptID(name string, id string) (*m
 		WHERE name = $1 AND id != $2
 	`
 	err := r.db.Get(&category, query, name, id)
-	// Cek jika tidak ada row
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Printf("FindCategoryByNameExceptID: no category found for name %s except ID %s", name, id)
@@ -185,9 +174,8 @@ func (r *adminRepository) FindCategoryByNameExceptID(name string, id string) (*m
 }
 
 /*
-	Antarmuka untuk operasi repositori admin.
-
-Mendefinisikan metode untuk CRUD admin dan kategori.
+Antarmuka untuk repositori admin.
+Antarmuka ini mendefinisikan metode untuk CRUD admin dan kategori.
 */
 type AdminRepository interface {
 	CreateAdmin(admin *model.AdminModel) error
@@ -200,8 +188,7 @@ type AdminRepository interface {
 }
 
 /*
-	Membuat instance baru dari AdminRepository.
-
+Fungsi untuk membuat instance baru dari AdminRepository.
 Instance repositori dikembalikan.
 */
 func NewAdminRepository(db *sqlx.DB) AdminRepository {
