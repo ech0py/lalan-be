@@ -7,9 +7,8 @@ import (
 )
 
 /*
-	Mengatur routing untuk fitur admin.
-
-Router dikonfigurasi dengan endpoint publik dan terproteksi.
+Fungsi untuk mengatur rute fitur admin.
+Router dikonfigurasi dengan rute yang diperlukan.
 */
 func SetupAdminRoutes(router *mux.Router, h *AdminHandler) {
 	// Setup group admin

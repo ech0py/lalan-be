@@ -19,9 +19,8 @@ import (
 )
 
 /*
-	Menginisialisasi dan menjalankan aplikasi server.
-
-Server HTTP dimulai dengan shutdown yang graceful.
+Fungsi utama untuk menjalankan aplikasi.
+Aplikasi server diinisialisasi dan dijalankan dengan shutdown yang graceful.
 */
 func main() {
 	config.LoadEnv()
@@ -38,24 +37,33 @@ func main() {
 		cfg.DBName,
 		cfg.SSLMode,
 	)
+
+	// admin setup
 	aRepo := admin.NewAdminRepository(db)
 	aService := admin.NewAdminService(aRepo)
 	aHandler := admin.NewAdminHandler(aService)
+	// public setup
 	pRepo := public.NewPublicRepository(db)
 	pService := public.NewPublicService(pRepo)
 	pHandler := public.NewPublicHandler(pService)
+	// hoster setup
 	hRepo := hoster.NewHosterRepository(db)
 	hService := hoster.NewHosterService(hRepo)
 	hHandler := hoster.NewHosterHandler(hService)
+
 	router := mux.NewRouter()
+	// Setup CORS Middleware
 	router.Use(middleware.CORSMiddleware)
+
 	admin.SetupAdminRoutes(router, aHandler)
 	hoster.SetupHosterRoutes(router, hHandler)
 	public.SetupPublicRoutes(router, pHandler)
+
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: router,
 	}
+	// Graceful shutdown
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {

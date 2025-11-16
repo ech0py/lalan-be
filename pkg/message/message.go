@@ -1,9 +1,8 @@
 package message
 
 /*
-	Konstanta untuk pesan respons API.
-
-Berisi pesan umum dan spesifik untuk berbagai operasi.
+Konstanta untuk pesan respons API.
+Konstanta ini berisi pesan yang digunakan dalam respons API.
 */
 const (
 	// Pesan umum

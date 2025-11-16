@@ -3,8 +3,8 @@ package model
 import "time"
 
 /*
-Merepresentasikan data pelanggan.
-Digunakan untuk mapping JSON dan database dengan field ID, nama, email, dll.
+Struktur untuk model pelanggan.
+Struktur ini merepresentasikan data pelanggan dengan field yang diperlukan.
 */
 type CustomerModel struct {
 	ID           string    `json:"id" db:"id"`

@@ -16,17 +16,27 @@ import (
 )
 
 /*
-	Struktur untuk layanan admin.
+Struktur untuk respons admin.
+Struktur ini berisi data token dan informasi admin.
+*/
+type AdminResponse struct {
+	ID           string `json:"id"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int    `json:"expires_in"`
+}
 
-Menyediakan logika bisnis untuk operasi admin.
+/*
+Struktur untuk layanan admin.
+Struktur ini menyediakan logika bisnis untuk operasi admin.
 */
 type adminService struct {
 	repo AdminRepository
 }
 
 /*
-	Menghasilkan token JWT untuk admin.
-
+Metode untuk menghasilkan token JWT untuk admin.
 Respons token dikembalikan jika berhasil.
 */
 func (s *adminService) generateTokenAdmin(userID string) (*AdminResponse, error) {
@@ -57,18 +67,15 @@ func (s *adminService) generateTokenAdmin(userID string) (*AdminResponse, error)
 }
 
 /*
-	Mengautentikasi admin dengan email dan password.
-
+Metode untuk mengautentikasi admin dengan email dan password.
 Respons token dikembalikan jika berhasil.
 */
 func (s *adminService) LoginAdmin(email, password string) (*AdminResponse, error) {
 	admin, err := s.repo.FindByEmailAdminForLogin(email)
-	// Cek error atau admin tidak ada
 	if err != nil || admin == nil {
 		return nil, errors.New("invalid credentials")
 	}
 
-	// Verifikasi password
 	if bcrypt.CompareHashAndPassword([]byte(admin.PasswordHash), []byte(password)) != nil {
 		return nil, errors.New("invalid credentials")
 	}
@@ -77,8 +84,7 @@ func (s *adminService) LoginAdmin(email, password string) (*AdminResponse, error
 }
 
 /*
-	Membuat admin baru dengan hashing password.
-
+Metode untuk membuat admin baru dengan hashing password.
 Admin berhasil dibuat atau error dikembalikan.
 */
 func (s *adminService) CreateAdmin(admin *model.AdminModel) error {
@@ -91,7 +97,6 @@ func (s *adminService) CreateAdmin(admin *model.AdminModel) error {
 	admin.UpdatedAt = time.Now()
 
 	err = s.repo.CreateAdmin(admin)
-	// Cek duplicate email
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate") {
 			return errors.New(message.MsgHosterEmailExists)
@@ -103,8 +108,7 @@ func (s *adminService) CreateAdmin(admin *model.AdminModel) error {
 }
 
 /*
-	Membuat kategori baru dengan validasi nama.
-
+Metode untuk membuat kategori baru.
 Kategori berhasil dibuat atau error dikembalikan.
 */
 func (s *adminService) CreateCategory(category *model.CategoryModel) error {
@@ -112,7 +116,6 @@ func (s *adminService) CreateCategory(category *model.CategoryModel) error {
 	if err != nil {
 		return err
 	}
-	// Cek nama sudah ada
 	if existing != nil {
 		return errors.New(message.MsgCategoryNameExists)
 	}
@@ -124,8 +127,7 @@ func (s *adminService) CreateCategory(category *model.CategoryModel) error {
 }
 
 /*
-	Memperbarui kategori.
-
+Metode untuk memperbarui kategori.
 Kategori berhasil diperbarui atau error dikembalikan.
 */
 func (s *adminService) UpdateCategory(category *model.CategoryModel) error {
@@ -134,8 +136,7 @@ func (s *adminService) UpdateCategory(category *model.CategoryModel) error {
 }
 
 /*
-	Menghapus kategori.
-
+Metode untuk menghapus kategori.
 Kategori berhasil dihapus atau error dikembalikan.
 */
 func (s *adminService) DeleteCategory(id string) error {
@@ -143,22 +144,8 @@ func (s *adminService) DeleteCategory(id string) error {
 }
 
 /*
-	Struktur untuk respons admin.
-
-Berisi data token dan informasi pengguna.
-*/
-type AdminResponse struct {
-	ID           string `json:"id"`
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	TokenType    string `json:"token_type"`
-	ExpiresIn    int    `json:"expires_in"`
-}
-
-/*
-	Antarmuka untuk layanan admin.
-
-Mendefinisikan metode untuk operasi admin dan kategori.
+Antarmuka untuk layanan admin.
+Antarmuka ini mendefinisikan metode untuk operasi admin.
 */
 type AdminService interface {
 	CreateAdmin(*model.AdminModel) error
@@ -169,8 +156,7 @@ type AdminService interface {
 }
 
 /*
-	Membuat instance baru dari AdminService.
-
+Fungsi untuk membuat instance baru dari AdminService.
 Instance layanan dikembalikan.
 */
 func NewAdminService(repo AdminRepository) AdminService {

@@ -5,8 +5,8 @@ Designed for scalability, maintainability, and clean architecture.
 
 ## Requirements
 
-- Go 1.24.4 or higher  
-- PostgreSQL  
+- Go 1.24.4 or higher
+- PostgreSQL
 
 ## Getting Started
 
@@ -21,39 +21,58 @@ go mod download
 Set up the `.env.dev` file before running the application:
 
 ```bash
-# PostgreSQL database connection components (development)
-DB_USER=<your_db_username>
-DB_PASSWORD=<your_db_password>
-DB_HOST=<your_db_host>
-DB_PORT=<your_db_port>
-DB_NAME=<your_db_name>
+# JWT Secret Key
+# Generate with: openssl rand -base64 32
+JWT_SECRET=""
 
-# JWT Secret Key (generate with: openssl rand -base64 32)
-JWT_SECRET=<your_secret_key>
+# Application Environment (dev or prod)
+APP_ENV=dev
 
 # Application Port
 APP_PORT=8080
+
+# PostgreSQL database connection (development)
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+DB_NAME=
 ```
 
 ## Project Structure
 
 ```
 lalan-be/
-├── cmd/                    # Application entry point
-├── internal/               # Core logic and modules
-│   ├── config/             # App and database configuration
-│   ├── handler/            # HTTP request handlers
-│   ├── middleware/         # Authentication and middleware logic
-│   ├── model/              # Data models
-│   ├── repository/         # Database operations
-│   ├── response/           # Response formatting utilities
-│   ├── route/              # Route definitions
-│   └── service/            # Business logic layer
-├── migrations/             # Database migrations
-├── pkg/                    # Shared helper packages
-├── .env.dev                # Environment configuration (development)
-├── go.mod                  # Go module definition
-└── go.sum                  # Go module checksums
+├── cmd/                        # Application entry point
+├── internal/                   # Core logic and modules
+│   ├── config/                 # App and database configuration
+│   ├── features/               # Feature-based modules
+│   │   ├── admin/              # Admin-specific features
+│   │   │   ├── handler.go      # Admin HTTP handlers
+│   │   │   ├── repository.go   # Admin database operations
+│   │   │   ├── route.go        # Admin route definitions
+│   │   │   └── service.go      # Admin business logic
+│   │   ├── hoster/             # Hoster-specific features
+│   │   │   ├── handler.go      # Hoster HTTP handlers
+│   │   │   ├── repository.go   # Hoster database operations
+│   │   │   ├── route.go        # Hoster route definitions
+│   │   │   └── service.go      # Hoster business logic
+│   │   └── public/             # Public features (no auth required)
+│   │       ├── handler.go      # Public HTTP handlers
+│   │       ├── repository.go   # Public database operations
+│   │       ├── route.go        # Public route definitions
+│   │       └── service.go      # Public business logic
+│   ├── middleware/             # Authentication and middleware logic
+│   ├── model/                  # Data models
+│   ├── repository/             # Shared repository interfaces
+│   ├── response/               # Response formatting utilities
+│   ├── route/                  # Shared route setup
+│   └── service/                # Shared service interfaces
+├── migrations/                 # Database migrations
+├── pkg/                        # Shared helper packages
+├── .env.dev                    # Environment configuration (development)
+├── go.mod                      # Go module definition
+└── go.sum                      # Go module checksums
 ```
 
 ## Run Locally
@@ -83,24 +102,51 @@ go build -o main ./cmd/main.go
 ## Adding New Features
 
 | Component  | Description                              | Location               |
-|-------------|------------------------------------------|------------------------|
-| Migration   | Manage database schema changes           | `migrations/`          |
-| Model       | Define data structures                   | `internal/model/`      |
-| Repository  | Implement database access logic          | `internal/repository/` |
-| Service     | Handle business logic                    | `internal/service/`    |
-| Handler     | Create HTTP request handlers             | `internal/handler/`    |
-| Routes      | Register and manage API routes           | `internal/route/`      |
-| Main        | Initialize and link all core components  | `cmd/main.go`          |
-
----
+|------------|------------------------------------------|------------------------|
+| Migration  | Manage database schema changes           | `migrations/`          |
+| Model      | Define data structures                   | `internal/model/`      |
+| Repository | Implement database access logic          | `internal/repository/` |
+| Service    | Handle business logic                    | `internal/service/`    |
+| Handler    | Create HTTP request handlers             | `internal/handler/`    |
+| Routes     | Register and manage API routes           | `internal/route/`      |
+| Main       | Initialize and link all core components  | `cmd/main.go`          |
 
 ## Code Commenting Guidelines
 
 ```
 {
-  "initial": "Analyze this file to understand its role. Identify every const, var, type, func, method, init, and interface.",
-  "after": "Remove all existing comments (// or /* */). No exceptions.",
-  "new": "Reorder strictly using standard Go layout: package → imports → const → var → init → types (with methods) → interfaces → funcs (main last).\n\nBefore each element below, add exactly one block comment /* */ written in Indonesian:\n- Every const group\n- Every var group\n- Every type\n- Every function/method (exported or unexported if more than one line or has side effects)\n\nEach block comment must contain EXACTLY TWO LINES:\nLine 1: Tujuan utama fungsi/type/blok.\nLine 2: Hasil atau nilai yang dikembalikan.\n\nMandatory example format:\n\"\"\"\n/* Menginisialisasi koneksi ke PostgreSQL.\nMengembalikan konfigurasi database jika proses berhasil. */\n\"\"\"\n\nRestrictions:\n- Output comments must be in Indonesian only.\n- Maximum two lines.\n- Follow the exact two-sentence pattern with no creative variation.\n- Do not add or modify functional code.\n- Do not echo any code inside this instruction output."
+  "task": "refactor_go_eksisting_file",
+  "requirements": {
+    "analysis": [
+      "Identify all const, var, type, method, interface, func, and init declarations."
+    ],
+    "comment_cleanup": "Remove all existing comments from the Go file without modifying any code.",
+    "ordering": [
+      "package",
+      "imports",
+      "const",
+      "var",
+      "init",
+      "types_and_methods",
+      "interfaces",
+      "funcs_with_main_last"
+    ],
+    "prepend_comments": {
+      "format": "block_comment",
+      "template": "/*\nKalimat tujuan.\nKalimat hasil.\n*/",
+      "language": "Indonesian",
+      "applies_to": [
+        "const_group",
+        "var_group",
+        "type",
+        "method",
+        "interface",
+        "function"
+      ],
+      "rule": "For every detected element, generate a new block comment using the template above."
+    },
+    "sql_formatting": "Convert any SQL query into a Go multiline string (`...`) without altering its logic or parameters.",
+    "logic_constraint": "Do not modify functional code. Only comments and formatting may be changed."
+  }
 }
-
 ```

@@ -9,9 +9,8 @@ import (
 )
 
 /*
-	Struktur untuk menyimpan konfigurasi database.
-
-Berisi koneksi DB dan parameter koneksi.
+Struktur untuk konfigurasi database.
+Struktur ini menyimpan parameter koneksi dan instance database.
 */
 type Config struct {
 	DB      *sqlx.DB
@@ -24,9 +23,8 @@ type Config struct {
 }
 
 /*
-	Menginisialisasi koneksi database PostgreSQL.
-
-Konfigurasi database dikembalikan jika berhasil.
+Fungsi untuk menginisialisasi konfigurasi database.
+Konfigurasi database dikembalikan jika koneksi berhasil.
 */
 func DatabaseConfig() (*Config, error) {
 	user := MustGetEnv("DB_USER")

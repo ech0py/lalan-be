@@ -8,15 +8,13 @@ import (
 )
 
 /*
-	Variabel untuk menandai status pemuatan environment.
-
-Menunjukkan apakah environment sudah dimuat.
+Variabel untuk status pemuatan environment.
+Variabel ini menandai apakah environment sudah dimuat.
 */
 var envLoaded bool
 
 /*
-	Mengambil rahasia JWT dari environment.
-
+Fungsi untuk mendapatkan rahasia JWT.
 Rahasia JWT dikembalikan sebagai byte slice.
 */
 func GetJWTSecret() []byte {
@@ -25,9 +23,8 @@ func GetJWTSecret() []byte {
 }
 
 /*
-	Memuat file environment jika belum dimuat.
-
-Environment dimuat dari file .env.dev jika bukan produksi.
+Fungsi untuk memuat environment.
+Environment dimuat dari file jika belum dimuat.
 */
 func LoadEnv() {
 	if envLoaded {
@@ -40,8 +37,7 @@ func LoadEnv() {
 }
 
 /*
-	Mengambil nilai environment dengan fallback.
-
+Fungsi untuk mendapatkan nilai environment dengan fallback.
 Nilai environment atau fallback dikembalikan.
 */
 func GetEnv(key, fallback string) string {
@@ -53,8 +49,7 @@ func GetEnv(key, fallback string) string {
 }
 
 /*
-	Mengambil nilai environment yang wajib.
-
+Fungsi untuk mendapatkan nilai environment yang wajib.
 Nilai environment dikembalikan atau program dihentikan.
 */
 func MustGetEnv(key string) string {

@@ -17,17 +17,15 @@ import (
 )
 
 /*
-	Struktur untuk layanan hoster.
-
-Menyediakan logika bisnis untuk operasi hoster.
+Struktur untuk layanan hoster.
+Struktur ini menyediakan logika bisnis untuk operasi hoster.
 */
 type hosterService struct {
 	repo HosterRepository
 }
 
 /*
-	Menghasilkan token JWT untuk hoster.
-
+Metode untuk menghasilkan token JWT untuk hoster.
 Respons token dikembalikan jika berhasil.
 */
 func (s *hosterService) generateTokenHoster(userID string) (*HosterResponse, error) {
@@ -58,18 +56,15 @@ func (s *hosterService) generateTokenHoster(userID string) (*HosterResponse, err
 }
 
 /*
-	Mengautentikasi hoster dengan email dan password.
-
+Metode untuk mengautentikasi hoster dengan email dan password.
 Respons token dikembalikan jika berhasil.
 */
 func (s *hosterService) LoginHoster(email, password string) (*HosterResponse, error) {
 	hoster, err := s.repo.FindByEmailHosterForLogin(email)
-	// Cek error atau hoster tidak ada
 	if err != nil || hoster == nil {
 		return nil, errors.New("invalid credentials")
 	}
 
-	// Verifikasi password
 	if bcrypt.CompareHashAndPassword([]byte(hoster.PasswordHash), []byte(password)) != nil {
 		return nil, errors.New("invalid credentials")
 	}
@@ -78,8 +73,7 @@ func (s *hosterService) LoginHoster(email, password string) (*HosterResponse, er
 }
 
 /*
-	Membuat hoster baru dengan hashing password.
-
+Metode untuk membuat hoster baru dengan hashing password.
 Hoster berhasil dibuat atau error dikembalikan.
 */
 func (s *hosterService) CreateHoster(hoster *model.HosterModel) error {
@@ -92,7 +86,6 @@ func (s *hosterService) CreateHoster(hoster *model.HosterModel) error {
 	hoster.UpdatedAt = time.Now()
 
 	err = s.repo.CreateHoster(hoster)
-	// Cek duplicate email
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate") {
 			return errors.New(message.MsgHosterEmailExists)
@@ -104,12 +97,10 @@ func (s *hosterService) CreateHoster(hoster *model.HosterModel) error {
 }
 
 /*
-	Mengambil detail hoster dari konteks.
-
+Metode untuk mengambil detail hoster dari konteks.
 Model hoster dikembalikan jika ditemukan.
 */
 func (s *hosterService) GetDetailHoster(ctx context.Context) (*model.HosterModel, error) {
-	// Ekstrak ID dari context menggunakan key yang benar (middleware.UserIDKey)
 	id, ok := ctx.Value(middleware.UserIDKey).(string)
 	if !ok {
 		return nil, errors.New("invalid token claims")
@@ -127,9 +118,265 @@ func (s *hosterService) GetDetailHoster(ctx context.Context) (*model.HosterModel
 }
 
 /*
-	Struktur untuk respons hoster.
+Metode untuk membuat item baru untuk hoster.
+Item divalidasi, dicek duplikasi nama, dan dibuat di database.
+*/
+func (s *hosterService) CreateItem(ctx context.Context, input *model.ItemModel) (*model.ItemModel, error) {
+	userID, ok := ctx.Value(middleware.UserIDKey).(string)
+	if !ok {
+		return nil, errors.New("invalid token claims")
+	}
 
-Berisi data token dan informasi pengguna.
+	input.Name = strings.TrimSpace(input.Name)
+	input.Description = strings.TrimSpace(input.Description)
+
+	if input.Name == "" {
+		return nil, errors.New(message.MsgItemNameRequired)
+	}
+
+	if input.CategoryID == "" {
+		return nil, errors.New("category ID is required")
+	}
+
+	if input.Stock < 0 {
+		return nil, errors.New(message.MsgItemStockInvalid)
+	}
+
+	if input.PricePerDay < 0 {
+		return nil, errors.New(message.MsgItemPricePerDayInvalid)
+	}
+
+	if input.Deposit < 0 {
+		return nil, errors.New(message.MsgItemDepositInvalid)
+	}
+
+	existing, err := s.repo.FindItemNameByUserID(input.Name, userID)
+	if err != nil {
+		return nil, err
+	}
+	if existing != nil {
+		return nil, errors.New(message.MsgItemNameExists)
+	}
+
+	input.ID = uuid.New().String()
+	input.UserID = userID
+
+	if err := s.repo.CreateItem(input); err != nil {
+		return nil, err
+	}
+
+	return s.repo.FindItemNameByID(input.ID)
+}
+
+/*
+Metode untuk mengambil item berdasarkan ID.
+Model item dikembalikan jika ditemukan.
+*/
+func (s *hosterService) GetItemByID(id string) (*model.ItemModel, error) {
+	if id == "" {
+		return nil, errors.New(message.MsgItemIDRequired)
+	}
+
+	item, err := s.repo.FindItemNameByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if item == nil {
+		return nil, errors.New(message.MsgItemNotFound)
+	}
+
+	return item, nil
+}
+
+/*
+Metode untuk mengambil semua item.
+Daftar model item dikembalikan.
+*/
+func (s *hosterService) GetAllItems() ([]*model.ItemModel, error) {
+	return s.repo.GetAllItems()
+}
+
+/*
+Metode untuk memperbarui item berdasarkan ID.
+Item diperbarui jika ditemukan.
+*/
+func (s *hosterService) UpdateItem(ctx context.Context, id string, input *model.ItemModel) (*model.ItemModel, error) {
+	userID, ok := ctx.Value(middleware.UserIDKey).(string)
+	if !ok {
+		return nil, errors.New("invalid token claims")
+	}
+
+	existing, err := s.repo.FindItemNameByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if existing == nil {
+		return nil, errors.New(message.MsgItemNotFound)
+	}
+	if existing.UserID != userID {
+		return nil, errors.New("unauthorized")
+	}
+
+	input.Name = strings.TrimSpace(input.Name)
+	input.Description = strings.TrimSpace(input.Description)
+
+	if input.Name == "" {
+		return nil, errors.New(message.MsgItemNameRequired)
+	}
+
+	if input.Stock < 0 {
+		return nil, errors.New(message.MsgItemStockInvalid)
+	}
+
+	if input.PricePerDay < 0 {
+		return nil, errors.New(message.MsgItemPricePerDayInvalid)
+	}
+
+	if input.Deposit < 0 {
+		return nil, errors.New(message.MsgItemDepositInvalid)
+	}
+
+	input.ID = id
+	input.UserID = userID
+	input.UpdatedAt = time.Now()
+
+	if err := s.repo.UpdateItem(input); err != nil {
+		return nil, err
+	}
+
+	return s.repo.FindItemNameByID(id)
+}
+
+/*
+Metode untuk menghapus item berdasarkan ID.
+Item dihapus jika ditemukan dan milik user.
+*/
+func (s *hosterService) DeleteItem(ctx context.Context, id string) error {
+	userID, ok := ctx.Value(middleware.UserIDKey).(string)
+	if !ok {
+		return errors.New("invalid token claims")
+	}
+
+	existing, err := s.repo.FindItemNameByID(id)
+	if err != nil {
+		return err
+	}
+	if existing == nil {
+		return errors.New(message.MsgItemNotFound)
+	}
+	if existing.UserID != userID {
+		return errors.New("unauthorized")
+	}
+
+	return s.repo.DeleteItem(id)
+}
+
+/*
+Metode untuk membuat terms and conditions baru untuk hoster.
+Terms and conditions divalidasi dan dibuat di database.
+*/
+func (s *hosterService) CreateTermsAndConditions(ctx context.Context, input *model.TermsAndConditionsModel) (*model.TermsAndConditionsModel, error) {
+	userID, ok := ctx.Value(middleware.UserIDKey).(string)
+	if !ok {
+		return nil, errors.New("invalid token claims")
+	}
+
+	input.ID = uuid.New().String()
+	input.UserID = userID
+
+	if err := s.repo.CreateTermsAndConditions(input); err != nil {
+		return nil, err
+	}
+
+	return s.repo.FindTermsAndConditionsByID(input.ID)
+}
+
+/*
+Metode untuk mengambil terms and conditions berdasarkan ID.
+Model terms and conditions dikembalikan jika ditemukan.
+*/
+func (s *hosterService) FindTermsAndConditionsByID(id string) (*model.TermsAndConditionsModel, error) {
+	if id == "" {
+		return nil, errors.New("ID is required")
+	}
+
+	tac, err := s.repo.FindTermsAndConditionsByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if tac == nil {
+		return nil, errors.New("terms and conditions not found")
+	}
+
+	return tac, nil
+}
+
+/*
+Metode untuk mengambil semua terms and conditions.
+Daftar model terms and conditions dikembalikan.
+*/
+func (s *hosterService) GetAllTermsAndConditions() ([]*model.TermsAndConditionsModel, error) {
+	return s.repo.GetAllTermsAndConditions()
+}
+
+/*
+Metode untuk memperbarui terms and conditions berdasarkan ID.
+Terms and conditions diperbarui jika ditemukan.
+*/
+func (s *hosterService) UpdateTermsAndConditions(ctx context.Context, id string, input *model.TermsAndConditionsModel) (*model.TermsAndConditionsModel, error) {
+	userID, ok := ctx.Value(middleware.UserIDKey).(string)
+	if !ok {
+		return nil, errors.New("invalid token claims")
+	}
+
+	existing, err := s.repo.FindTermsAndConditionsByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if existing == nil {
+		return nil, errors.New("terms and conditions not found")
+	}
+	if existing.UserID != userID {
+		return nil, errors.New("unauthorized")
+	}
+
+	input.ID = id
+	input.UserID = userID
+
+	if err := s.repo.UpdateTermsAndConditions(input); err != nil {
+		return nil, err
+	}
+
+	return s.repo.FindTermsAndConditionsByID(id)
+}
+
+/*
+Metode untuk menghapus terms and conditions berdasarkan ID.
+Terms and conditions dihapus jika ditemukan dan milik user.
+*/
+func (s *hosterService) DeleteTermsAndConditions(ctx context.Context, id string) error {
+	userID, ok := ctx.Value(middleware.UserIDKey).(string)
+	if !ok {
+		return errors.New("invalid token claims")
+	}
+
+	existing, err := s.repo.FindTermsAndConditionsByID(id)
+	if err != nil {
+		return err
+	}
+	if existing == nil {
+		return errors.New("terms and conditions not found")
+	}
+	if existing.UserID != userID {
+		return errors.New("unauthorized")
+	}
+
+	return s.repo.DeleteTermsAndConditions(id)
+}
+
+/*
+Struktur untuk respons hoster.
+Struktur ini berisi data token dan informasi pengguna.
 */
 type HosterResponse struct {
 	ID           string `json:"id"`
@@ -140,19 +387,27 @@ type HosterResponse struct {
 }
 
 /*
-	Antarmuka untuk layanan hoster.
-
-Mendefinisikan metode untuk operasi hoster.
+Antarmuka untuk layanan hoster.
+Antarmuka ini mendefinisikan metode untuk operasi hoster.
 */
 type HosterService interface {
 	CreateHoster(*model.HosterModel) error
 	LoginHoster(email, password string) (*HosterResponse, error)
 	GetDetailHoster(ctx context.Context) (*model.HosterModel, error)
+	CreateItem(ctx context.Context, input *model.ItemModel) (*model.ItemModel, error)
+	GetItemByID(id string) (*model.ItemModel, error)
+	GetAllItems() ([]*model.ItemModel, error)
+	UpdateItem(ctx context.Context, id string, input *model.ItemModel) (*model.ItemModel, error)
+	DeleteItem(ctx context.Context, id string) error
+	CreateTermsAndConditions(ctx context.Context, input *model.TermsAndConditionsModel) (*model.TermsAndConditionsModel, error)
+	FindTermsAndConditionsByID(id string) (*model.TermsAndConditionsModel, error)
+	GetAllTermsAndConditions() ([]*model.TermsAndConditionsModel, error)
+	UpdateTermsAndConditions(ctx context.Context, id string, input *model.TermsAndConditionsModel) (*model.TermsAndConditionsModel, error)
+	DeleteTermsAndConditions(ctx context.Context, id string) error
 }
 
 /*
-	Membuat instance baru dari HosterService.
-
+Fungsi untuk membuat instance baru dari HosterService.
 Instance layanan dikembalikan.
 */
 func NewHosterService(repo HosterRepository) HosterService {

@@ -12,9 +12,8 @@ import (
 )
 
 /*
-	Konstanta untuk kunci konteks.
-
-Menentukan kunci untuk user ID dan role.
+Konstanta untuk kunci konteks.
+Konstanta ini mendefinisikan kunci untuk menyimpan user ID dan role dalam konteks.
 */
 const (
 	UserIDKey   contextKey = "user_id"
@@ -22,16 +21,14 @@ const (
 )
 
 /*
-	Type untuk kunci konteks.
-
-Digunakan untuk menyimpan nilai dalam konteks.
+Type untuk kunci konteks.
+Type ini digunakan sebagai kunci untuk nilai konteks.
 */
 type contextKey string
 
 /*
-	Struktur untuk claims JWT.
-
-Berisi claims standar dan role pengguna.
+Struktur untuk claims JWT.
+Struktur ini berisi claims JWT standar dan role pengguna.
 */
 type Claims struct {
 	jwt.RegisteredClaims
@@ -39,9 +36,8 @@ type Claims struct {
 }
 
 /*
-	Memvalidasi token JWT.
-
-Konteks diperbarui dengan user ID dan role jika valid.
+Fungsi untuk middleware JWT.
+Middleware ini memvalidasi token JWT dan memperbarui konteks.
 */
 func JWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -80,8 +76,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 }
 
 /*
-	Mengambil user ID dari konteks.
-
+Fungsi untuk mendapatkan user ID dari konteks.
 User ID dikembalikan sebagai string.
 */
 func GetUserID(r *http.Request) string {
@@ -90,8 +85,7 @@ func GetUserID(r *http.Request) string {
 }
 
 /*
-	Mengambil user role dari konteks.
-
+Fungsi untuk mendapatkan user role dari konteks.
 User role dikembalikan sebagai string.
 */
 func GetUserRole(r *http.Request) string {

@@ -1,30 +1,26 @@
 package hoster
 
 import (
-	"lalan-be/internal/middleware"
-
 	"github.com/gorilla/mux"
 )
 
 /*
-	Mengatur routing untuk fitur hoster.
-
-Router dikonfigurasi dengan endpoint publik dan terproteksi.
+Fungsi untuk mengatur rute fitur hoster.
+Router dikonfigurasi dengan rute yang diperlukan.
 */
-func SetupHosterRoutes(router *mux.Router, h *HosterHandler) {
+func SetupHosterRoutes(router *mux.Router, handler *HosterHandler) {
 	hoster := router.PathPrefix("/api/v1/hoster").Subrouter()
-	// Setup public routes
-	hoster.HandleFunc("/register", h.CreateHoster).Methods("POST")
-	hoster.HandleFunc("/login", h.LoginHoster).Methods("POST")
-	protected := hoster.PathPrefix("").Subrouter()
-
-	// Middleware JWT
-	protected.Use(middleware.JWTMiddleware)
-
-	// Middleware hoster only
-	protected.Use(middleware.Hoster)
-	// Setup protected routes
-
-	protected.HandleFunc("/detail", h.GetDetailHoster).Methods("GET")
-
+	hoster.HandleFunc("/register", handler.CreateHoster).Methods("POST")
+	hoster.HandleFunc("/login", handler.LoginHoster).Methods("POST")
+	hoster.HandleFunc("/detail", handler.GetDetailHoster).Methods("GET")
+	hoster.HandleFunc("/items", handler.CreateItem).Methods("POST")
+	hoster.HandleFunc("/items/{id}", handler.GetItemByID).Methods("GET")
+	hoster.HandleFunc("/items", handler.GetAllItems).Methods("GET")
+	hoster.HandleFunc("/items/{id}", handler.UpdateItem).Methods("PUT")
+	hoster.HandleFunc("/items/{id}", handler.DeleteItem).Methods("DELETE")
+	hoster.HandleFunc("/terms", handler.CreateTermsAndConditions).Methods("POST")
+	hoster.HandleFunc("/terms/{id}", handler.FindTermsAndConditionsByID).Methods("GET")
+	hoster.HandleFunc("/terms", handler.GetAllTermsAndConditions).Methods("GET")
+	hoster.HandleFunc("/terms", handler.UpdateTermsAndConditions).Methods("PUT")
+	hoster.HandleFunc("/terms", handler.DeleteTermsAndConditions).Methods("DELETE")
 }
